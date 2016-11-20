@@ -45,7 +45,8 @@ public final class JavaPluginLoader implements PluginLoader {
         server = instance;
     }
 
-    public Plugin loadPlugin(final File file) throws InvalidPluginException {
+    @Override
+    public Plugin loadPlugin(final File file) throws InvalidPluginException, UnknownDependencyException {
         Validate.notNull(file, "File cannot be null");
 
         if (!file.exists()) {

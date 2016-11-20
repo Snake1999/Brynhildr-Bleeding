@@ -9,13 +9,10 @@ public class CompressedStreamTools {
      * Load the gzipped compound from the inputstream.
      */
     public static NBTTagCompound readCompressed(InputStream is) throws IOException {
-        DataInputStream datainputstream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(is)));
         NBTTagCompound nbttagcompound;
 
-        try {
+        try (DataInputStream datainputstream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(is)))) {
             nbttagcompound = read(datainputstream, NBTSizeTracker.INFINITE);
-        } finally {
-            datainputstream.close();
         }
 
         return nbttagcompound;
@@ -25,12 +22,9 @@ public class CompressedStreamTools {
      * Write the compound, gzipped, to the outputstream.
      */
     public static void writeCompressed(NBTTagCompound compound, OutputStream outputStream) throws IOException {
-        DataOutputStream dataoutputstream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(outputStream)));
 
-        try {
+        try (DataOutputStream dataoutputstream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(outputStream)))) {
             write(compound, dataoutputstream);
-        } finally {
-            dataoutputstream.close();
         }
     }
 
@@ -45,10 +39,10 @@ public class CompressedStreamTools {
      * Reads the given DataInput, constructs, and returns an NBTTagCompound with the data from the DataInput
      */
     public static NBTTagCompound read(DataInput input, NBTSizeTracker accounter) throws IOException {
-        NBTTag nbtbase = read(input, 0, accounter);
+        NBTTag tag = read(input, 0, accounter);
 
-        if (nbtbase instanceof NBTTagCompound) {
-            return (NBTTagCompound) nbtbase;
+        if (tag instanceof NBTTagCompound) {
+            return (NBTTagCompound) tag;
         } else {
             throw new IOException("Root tag must be a named compound tag");
         }
@@ -74,10 +68,10 @@ public class CompressedStreamTools {
             return new NBTTagEnd();
         } else {
             input.readUTF();
-            NBTTag nbtbase = NBTTag.createNewByType(tagId);
+            NBTTag tag = NBTTag.createNewByType(tagId);
 
-            nbtbase.read(input, depth, accounter);
-            return nbtbase;
+            tag.read(input, depth, accounter);
+            return tag;
         }
     }
 }

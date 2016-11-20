@@ -110,7 +110,7 @@ public class MetaItem implements Cloneable, ConfigurationSerializable {
         this.displayName = meta.displayName;
 
         if (meta.hasLore()) {
-            this.lore = new ArrayList<String>(meta.lore);
+            this.lore = new ArrayList<>(meta.lore);
         }
 
         if (meta.hasEnchants()) {
@@ -132,7 +132,7 @@ public class MetaItem implements Cloneable, ConfigurationSerializable {
 
             if (display.hasKey(LORE.NBT)) {
                 NBTTagList list = display.getTagList(LORE.NBT, 8);
-                lore = new ArrayList<String>(list.tagCount());
+                lore = new ArrayList<>(list.tagCount());
 
                 for (int index = 0; index < list.tagCount(); index++) {
                     String line = list.getStringTagAt(index);
@@ -348,7 +348,7 @@ public class MetaItem implements Cloneable, ConfigurationSerializable {
      */
     public boolean addEnchant(Enchantment ench, int level, boolean ignoreLevelRestriction) {
         if (enchantments == null) {
-            enchantments = new HashMap<Enchantment, Integer>(4);
+            enchantments = new HashMap<>(4);
         }
 
         if (ignoreLevelRestriction || level >= ench.getStartLevel() && level <= ench.getMaxLevel()) {
@@ -553,7 +553,7 @@ public class MetaItem implements Cloneable, ConfigurationSerializable {
         builder.put(key.BUKKIT, enchants.build());
     }
 
-    static void safelyAdd(Iterable addFrom, Collection addTo, int maxItemLength) {
+    static void safelyAdd(Iterable addFrom, Collection<String> addTo, int maxItemLength) {
         if (addFrom != null) {
             Iterator iterator = addFrom.iterator();
 

@@ -51,9 +51,9 @@ public enum EnumFacing {
      * All Facings with horizontal axis in order S-W-N-E
      */
     private static final EnumFacing[] HORIZONTALS = new EnumFacing[4];
-    private static final Map<String, EnumFacing> NAME_LOOKUP = Maps.<String, EnumFacing>newHashMap();
+    private static final Map<String, EnumFacing> NAME_LOOKUP = Maps.newHashMap();
 
-    private EnumFacing(int indexIn, int oppositeIn, int horizontalIndexIn, String nameIn, AxisDirection axisDirectionIn, Axis axisIn, Vec3i directionVecIn) {
+    EnumFacing(int indexIn, int oppositeIn, int horizontalIndexIn, String nameIn, AxisDirection axisDirectionIn, Axis axisIn, Vec3i directionVecIn) {
         this.index = indexIn;
         this.horizontalIndex = horizontalIndexIn;
         this.opposite = oppositeIn;
@@ -223,16 +223,16 @@ public enum EnumFacing {
         }
     }
 
-    public static enum Axis implements Predicate<EnumFacing> {
+    public enum Axis implements Predicate<EnumFacing> {
         X("x", Plane.HORIZONTAL),
         Y("y", Plane.VERTICAL),
         Z("z", Plane.HORIZONTAL);
 
-        private static final Map<String, Axis> NAME_LOOKUP = Maps.<String, Axis>newHashMap();
+        private static final Map<String, Axis> NAME_LOOKUP = Maps.newHashMap();
         private final String name;
         private final Plane plane;
 
-        private Axis(String name, Plane plane) {
+        Axis(String name, Plane plane) {
             this.name = name;
             this.plane = plane;
         }
@@ -264,7 +264,7 @@ public enum EnumFacing {
         }
     }
 
-    public static enum AxisDirection {
+    public enum AxisDirection {
         POSITIVE(1, "Towards positive"),
         NEGATIVE(-1, "Towards negative");
 

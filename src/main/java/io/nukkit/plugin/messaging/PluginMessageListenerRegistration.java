@@ -77,16 +77,16 @@ public final class PluginMessageListenerRegistration {
             return false;
         }
         final PluginMessageListenerRegistration other = (PluginMessageListenerRegistration) obj;
-        if (this.messenger != other.messenger && (this.messenger == null || !this.messenger.equals(other.messenger))) {
+        if (this.messenger != other.messenger && !this.messenger.equals(other.messenger)) {
             return false;
         }
-        if (this.plugin != other.plugin && (this.plugin == null || !this.plugin.equals(other.plugin))) {
+        if (this.plugin != other.plugin && !this.plugin.equals(other.plugin)) {
             return false;
         }
-        if ((this.channel == null) ? (other.channel != null) : !this.channel.equals(other.channel)) {
+        if (!this.channel.equals(other.channel)) {
             return false;
         }
-        if (this.listener != other.listener && (this.listener == null || !this.listener.equals(other.listener))) {
+        if (this.listener != other.listener && !this.listener.equals(other.listener)) {
             return false;
         }
         return true;

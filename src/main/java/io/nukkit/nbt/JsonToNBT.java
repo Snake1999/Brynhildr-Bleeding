@@ -47,7 +47,7 @@ public class JsonToNBT {
                         throw new NBTException("Unbalanced curly brackets {}: " + str);
                     }
 
-                    if (c0 == 93 && (stack.isEmpty() || ((Character) stack.pop()).charValue() != 91)) {
+                    if (c0 == 93 && (stack.isEmpty() || (Character) stack.pop() != 91)) {
                         throw new NBTException("Unbalanced square brackets []: " + str);
                     }
                 } else {
@@ -55,7 +55,7 @@ public class JsonToNBT {
                         ++i;
                     }
 
-                    stack.push(Character.valueOf(c0));
+                    stack.push(c0);
                 }
             }
         }
@@ -138,7 +138,7 @@ public class JsonToNBT {
     private static Any getTagFromNameValue(String str, boolean isArray) throws NBTException {
         String s = locateName(str, isArray);
         String s1 = locateValue(str, isArray);
-        return joinStrToNBT(new String[]{s, s1});
+        return joinStrToNBT(s, s1);
     }
 
     private static String nextNameValuePair(String str, boolean isCompound) throws NBTException {
@@ -161,7 +161,7 @@ public class JsonToNBT {
     }
 
     private static String locateValueAt(String str, int index) throws NBTException {
-        Stack<Character> stack = new Stack();
+        Stack<Character> stack = new Stack<>();
         int i = index + 1;
         boolean flag = false;
         boolean flag1 = false;
@@ -188,11 +188,11 @@ public class JsonToNBT {
                 }
             } else if (!flag) {
                 if (c0 != 123 && c0 != 91) {
-                    if (c0 == 125 && (stack.isEmpty() || ((Character) stack.pop()).charValue() != 123)) {
+                    if (c0 == 125 && (stack.isEmpty() || (Character) stack.pop() != 123)) {
                         throw new NBTException("Unbalanced curly brackets {}: " + str);
                     }
 
-                    if (c0 == 93 && (stack.isEmpty() || ((Character) stack.pop()).charValue() != 91)) {
+                    if (c0 == 93 && (stack.isEmpty() || (Character) stack.pop() != 91)) {
                         throw new NBTException("Unbalanced square brackets []: " + str);
                     }
 
@@ -200,7 +200,7 @@ public class JsonToNBT {
                         return str.substring(0, i);
                     }
                 } else {
-                    stack.push(Character.valueOf(c0));
+                    stack.push(c0);
                 }
             }
 
@@ -295,7 +295,7 @@ public class JsonToNBT {
     }
 
     static class Compound extends Any {
-        protected java.util.List<Any> tagList = Lists.<Any>newArrayList();
+        protected java.util.List<Any> tagList = Lists.newArrayList();
 
         public Compound(String jsonIn) {
             this.json = jsonIn;
@@ -313,7 +313,7 @@ public class JsonToNBT {
     }
 
     static class List extends Any {
-        protected java.util.List<Any> tagList = Lists.<Any>newArrayList();
+        protected java.util.List<Any> tagList = Lists.newArrayList();
 
         public List(String json) {
             this.json = json;
@@ -386,7 +386,7 @@ public class JsonToNBT {
 
             if (this.jsonValue.startsWith("[") && this.jsonValue.endsWith("]")) {
                 String s = this.jsonValue.substring(1, this.jsonValue.length() - 1);
-                String[] astring = (String[]) Iterables.toArray(SPLITTER.split(s), String.class);
+                String[] astring = Iterables.toArray(SPLITTER.split(s), String.class);
 
                 try {
                     int[] aint = new int[astring.length];

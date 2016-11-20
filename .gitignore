@@ -10,3 +10,4 @@ buildNumber.properties
 /src/main/resources/META-INF/
 /.idea/
 /nukkit.iml
+/out/

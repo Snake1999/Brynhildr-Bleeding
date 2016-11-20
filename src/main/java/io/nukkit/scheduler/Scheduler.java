@@ -349,7 +349,7 @@ public class Scheduler {
         this.parsePending();
 
         while (this.isReady(currentTick)) {
-            Task task = (Task) this.pending.remove();
+            Task task = this.pending.remove();
             if (task.getPeriod() < -1L) {
                 if (task.isSync()) {
                     this.runners.remove(task.getTaskId(), task);
@@ -438,7 +438,7 @@ public class Scheduler {
     }
 
     private boolean isReady(int currentTick) {
-        return !this.pending.isEmpty() && ((Task) this.pending.peek()).getNextRun() <= (long) currentTick;
+        return !this.pending.isEmpty() && this.pending.peek().getNextRun() <= (long) currentTick;
     }
 
     public String toString() {

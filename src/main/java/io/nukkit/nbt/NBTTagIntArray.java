@@ -67,7 +67,7 @@ public class NBTTagIntArray extends NBTTag {
     }
 
     public boolean equals(Object obj) {
-        return super.equals(obj) ? Arrays.equals(this.intArray, ((NBTTagIntArray) obj).intArray) : false;
+        return super.equals(obj) && Arrays.equals(this.intArray, ((NBTTagIntArray) obj).intArray);
     }
 
     public int hashCode() {

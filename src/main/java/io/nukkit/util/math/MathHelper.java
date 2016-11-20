@@ -118,16 +118,16 @@ public class MathHelper {
     /**
      * Maximum of the absolute value of two numbers.
      */
-    public static double abs_max(double p_76132_0_, double p_76132_2_) {
-        if (p_76132_0_ < 0.0D) {
-            p_76132_0_ = -p_76132_0_;
+    public static double abs_max(double number1, double number2) {
+        if (number1 < 0.0D) {
+            number1 = -number1;
         }
 
-        if (p_76132_2_ < 0.0D) {
-            p_76132_2_ = -p_76132_2_;
+        if (number2 < 0.0D) {
+            number2 = -number2;
         }
 
-        return p_76132_0_ > p_76132_2_ ? p_76132_0_ : p_76132_2_;
+        return number1 > number2 ? number1 : number2;
     }
 
     public static int getRandomIntegerInRange(Random random, int minimum, int maximum) {
@@ -308,45 +308,45 @@ public class MathHelper {
         return getRandomUuid(RANDOM);
     }
 
-    public static double pct(double p_181160_0_, double p_181160_2_, double p_181160_4_) {
-        return (p_181160_0_ - p_181160_2_) / (p_181160_4_ - p_181160_2_);
+    public static double pct(double x, double y, double z) {
+        return (x - y) / (z - y);
     }
 
-    public static double atan2(double p_181159_0_, double p_181159_2_) {
-        double d0 = p_181159_2_ * p_181159_2_ + p_181159_0_ * p_181159_0_;
+    public static double atan2(double y, double x) {
+        double square = x * x + y * y;
 
-        if (Double.isNaN(d0)) {
+        if (Double.isNaN(square)) {
             return Double.NaN;
         } else {
-            boolean flag = p_181159_0_ < 0.0D;
+            boolean flag = y < 0.0D;
 
             if (flag) {
-                p_181159_0_ = -p_181159_0_;
+                y = -y;
             }
 
-            boolean flag1 = p_181159_2_ < 0.0D;
+            boolean flag1 = x < 0.0D;
 
             if (flag1) {
-                p_181159_2_ = -p_181159_2_;
+                x = -x;
             }
 
-            boolean flag2 = p_181159_0_ > p_181159_2_;
+            boolean flag2 = y > x;
 
             if (flag2) {
-                double d1 = p_181159_2_;
-                p_181159_2_ = p_181159_0_;
-                p_181159_0_ = d1;
+                double d1 = x;
+                x = y;
+                y = d1;
             }
 
-            double d9 = fastInvSqrt(d0);
-            p_181159_2_ = p_181159_2_ * d9;
-            p_181159_0_ = p_181159_0_ * d9;
-            double d2 = FRAC_BIAS + p_181159_0_;
+            double d9 = fastInvSqrt(square);
+            x = x * d9;
+            y = y * d9;
+            double d2 = FRAC_BIAS + y;
             int i = (int) Double.doubleToRawLongBits(d2);
             double d3 = ASINE_TAB[i];
             double d4 = COS_TAB[i];
             double d5 = d2 - FRAC_BIAS;
-            double d6 = p_181159_0_ * d4 - p_181159_2_ * d5;
+            double d6 = y * d4 - x * d5;
             double d7 = (6.0D + d6 * d6) * d6 * 0.16666666666666666D;
             double d8 = d3 + d7;
 
@@ -366,22 +366,22 @@ public class MathHelper {
         }
     }
 
-    public static double fastInvSqrt(double p_181161_0_) {
-        double d0 = 0.5D * p_181161_0_;
-        long i = Double.doubleToRawLongBits(p_181161_0_);
+    public static double fastInvSqrt(double v) {
+        double d = 0.5D * v;
+        long i = Double.doubleToRawLongBits(v);
         i = 6910469410427058090L - (i >> 1);
-        p_181161_0_ = Double.longBitsToDouble(i);
-        p_181161_0_ = p_181161_0_ * (1.5D - d0 * p_181161_0_ * p_181161_0_);
-        return p_181161_0_;
+        v = Double.longBitsToDouble(i);
+        v = v * (1.5D - d * v * v);
+        return v;
     }
 
-    public static int getHash(int p_188208_0_) {
-        p_188208_0_ = p_188208_0_ ^ p_188208_0_ >>> 16;
-        p_188208_0_ = p_188208_0_ * -2048144789;
-        p_188208_0_ = p_188208_0_ ^ p_188208_0_ >>> 13;
-        p_188208_0_ = p_188208_0_ * -1028477387;
-        p_188208_0_ = p_188208_0_ ^ p_188208_0_ >>> 16;
-        return p_188208_0_;
+    public static int getHash(int i) {
+        i = i ^ i >>> 16;
+        i = i * -2048144789;
+        i = i ^ i >>> 13;
+        i = i * -1028477387;
+        i = i ^ i >>> 16;
+        return i;
     }
 
     static {
@@ -395,10 +395,10 @@ public class MathHelper {
         COS_TAB = new double[257];
 
         for (int j = 0; j < 257; ++j) {
-            double d0 = (double) j / 256.0D;
-            double d1 = Math.asin(d0);
-            COS_TAB[j] = Math.cos(d1);
-            ASINE_TAB[j] = d1;
+            double d = (double) j / 256.0D;
+            double angle = Math.asin(d);
+            COS_TAB[j] = Math.cos(angle);
+            ASINE_TAB[j] = angle;
         }
     }
 }

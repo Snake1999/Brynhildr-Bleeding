@@ -86,6 +86,7 @@ public class NetherWarts extends MaterialData {
             case RIPE:
                 setData((byte) 0x3);
                 return;
+            default:
         }
     }
 

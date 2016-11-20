@@ -36,14 +36,14 @@ public class Vec4b {
         return this.rotation;
     }
 
-    public boolean equals(Object p_equals_1_) {
-        if (this == p_equals_1_) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
-        } else if (!(p_equals_1_ instanceof Vec4b)) {
+        } else if (!(obj instanceof Vec4b)) {
             return false;
         } else {
-            Vec4b vec4b = (Vec4b) p_equals_1_;
-            return this.type != vec4b.type ? false : (this.rotation != vec4b.rotation ? false : (this.x != vec4b.x ? false : this.y == vec4b.y));
+            Vec4b vec4b = (Vec4b) obj;
+            return this.type == vec4b.type && (this.rotation == vec4b.rotation && (this.x == vec4b.x && this.y == vec4b.y));
         }
     }
 

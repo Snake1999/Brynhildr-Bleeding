@@ -33,11 +33,11 @@ public class Rotations {
     }
 
     public NBTTagList writeToNBT() {
-        NBTTagList nbttaglist = new NBTTagList();
-        nbttaglist.appendTag(new NBTTagFloat(this.x));
-        nbttaglist.appendTag(new NBTTagFloat(this.y));
-        nbttaglist.appendTag(new NBTTagFloat(this.z));
-        return nbttaglist;
+        NBTTagList nbtTagList = new NBTTagList();
+        nbtTagList.appendTag(new NBTTagFloat(this.x));
+        nbtTagList.appendTag(new NBTTagFloat(this.y));
+        nbtTagList.appendTag(new NBTTagFloat(this.z));
+        return nbtTagList;
     }
 
     public boolean equals(Object obj) {

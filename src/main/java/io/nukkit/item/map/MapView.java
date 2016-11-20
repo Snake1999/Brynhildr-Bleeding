@@ -9,7 +9,7 @@ public interface MapView {
     /**
      * An enum representing all possible scales a map can be set to.
      */
-    public static enum Scale {
+    enum Scale {
         CLOSEST(0),
         CLOSE(1),
         NORMAL(2),
@@ -18,7 +18,7 @@ public interface MapView {
 
         private byte value;
 
-        private Scale(int value) {
+        Scale(int value) {
             this.value = (byte) value;
         }
 
@@ -67,7 +67,7 @@ public interface MapView {
      * @deprecated Magic value
      */
     @Deprecated
-    public short getId();
+    short getId();
 
     /**
      * Check whether this map is virtual. A map is virtual if its lowermost
@@ -75,49 +75,49 @@ public interface MapView {
      *
      * @return Whether the map is virtual.
      */
-    public boolean isVirtual();
+    boolean isVirtual();
 
     /**
      * Get the scale of this map.
      *
      * @return The scale of the map.
      */
-    public Scale getScale();
+    Scale getScale();
 
     /**
      * Set the scale of this map.
      *
      * @param scale The scale to set.
      */
-    public void setScale(Scale scale);
+    void setScale(Scale scale);
 
     /**
      * Get the center X position of this map.
      *
      * @return The center X position.
      */
-    public int getCenterX();
+    int getCenterX();
 
     /**
      * Get the center Z position of this map.
      *
      * @return The center Z position.
      */
-    public int getCenterZ();
+    int getCenterZ();
 
     /**
      * Set the center X position of this map.
      *
      * @param x The center X position.
      */
-    public void setCenterX(int x);
+    void setCenterX(int x);
 
     /**
      * Set the center Z position of this map.
      *
      * @param z The center Z position.
      */
-    public void setCenterZ(int z);
+    void setCenterZ(int z);
 
     /**
      * Get the world that this map is associated with. Primarily used by the

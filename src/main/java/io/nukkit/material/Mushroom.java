@@ -108,7 +108,7 @@ public class Mushroom extends MaterialData {
      */
     @Deprecated
     public void setStem() {
-        setData((byte) MushroomBlockTexture.STEM_SIDES.getData());
+        setData(MushroomBlockTexture.STEM_SIDES.getData());
     }
 
     /**

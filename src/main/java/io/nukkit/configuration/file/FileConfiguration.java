@@ -92,12 +92,8 @@ public abstract class FileConfiguration extends MemoryConfiguration {
 
         String data = saveToString();
 
-        Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charsets.UTF_8);
-
-        try {
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charsets.UTF_8)) {
             writer.write(data);
-        } finally {
-            writer.close();
         }
     }
 
@@ -191,19 +187,16 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * @throws IllegalArgumentException      thrown when reader is null
      */
     public void load(Reader reader) throws IOException, InvalidConfigurationException {
-        BufferedReader input = reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader);
 
         StringBuilder builder = new StringBuilder();
 
-        try {
+        try (BufferedReader input = reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader)) {
             String line;
 
             while ((line = input.readLine()) != null) {
                 builder.append(line);
                 builder.append('\n');
             }
-        } finally {
-            input.close();
         }
 
         loadFromString(builder.toString());

@@ -274,7 +274,7 @@ public final class FireworkEffect implements ConfigurationSerializable {
                     flicker,
                     trail,
                     colors.build(),
-                    fadeColors == null ? ImmutableList.<Color>of() : fadeColors.build(),
+                    fadeColors == null ? ImmutableList.of() : fadeColors.build(),
                     type
             );
         }
@@ -371,7 +371,7 @@ public final class FireworkEffect implements ConfigurationSerializable {
 
     @Override
     public Map<String, Object> serialize() {
-        return ImmutableMap.<String, Object>of(
+        return ImmutableMap.of(
                 FLICKER, flicker,
                 TRAIL, trail,
                 COLORS, colors,

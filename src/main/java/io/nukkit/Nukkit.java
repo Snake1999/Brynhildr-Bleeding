@@ -131,6 +131,7 @@ public class Nukkit {
 
 
     public static void main(String[] args) {
+        System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
 
         OptionParser parser = new OptionParser() {
             {
