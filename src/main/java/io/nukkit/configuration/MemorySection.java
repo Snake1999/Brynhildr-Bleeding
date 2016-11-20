@@ -211,7 +211,7 @@ public class MemorySection implements ConfigurationSection {
     }
 
     public void set(String path, Object value) {
-        Validate.notEmpty(path, "Cannot set to an empty path");
+        Validate.notEmpty(path, "Cannot offset to an empty path");
 
         Configuration root = getRoot();
         if (root == null) {

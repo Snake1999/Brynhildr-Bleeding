@@ -5,7 +5,7 @@ import io.nukkit.command.CommandSender;
 import io.nukkit.entity.Player;
 import io.nukkit.enumerations.ChatColor;
 import io.nukkit.item.ItemFactory;
-import io.nukkit.item.meta.ItemMeta;
+import io.nukkit.item.meta.MetaItem;
 import io.nukkit.plugin.PluginManager;
 import io.nukkit.scheduler.Scheduler;
 import io.nukkit.util.Versioning;
@@ -101,7 +101,7 @@ public class Nukkit {
     }
 
     /**
-     * Gets the instance of the item factory (for {@link ItemMeta}).
+     * Gets the instance of the item factory (for {@link MetaItem}).
      *
      * @return the item factory
      * @see ItemFactory

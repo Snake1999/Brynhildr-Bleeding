@@ -2,9 +2,7 @@ package io.nukkit.item;
 
 import io.nukkit.Server;
 import io.nukkit.configuration.serialization.ConfigurationSerialization;
-import io.nukkit.item.meta.BookMeta;
-import io.nukkit.item.meta.ItemMeta;
-import io.nukkit.item.meta.SkullMeta;
+import io.nukkit.item.meta.MetaItem;
 import io.nukkit.material.Material;
 import org.apache.commons.lang.Validate;
 
@@ -21,7 +19,7 @@ public final class ItemFactory {
 
     static {
         instance = new ItemFactory();
-        ConfigurationSerialization.registerClass(ItemMeta.SerializableMeta.class);
+        ConfigurationSerialization.registerClass(MetaItem.SerializableMeta.class);
         //TODO ATTRIBUTE?
     }
 
@@ -32,15 +30,16 @@ public final class ItemFactory {
      * This creates a new item meta for the material.
      *
      * @param material The material to consider as base for the meta
-     * @return a new ItemMeta that could be applied to an item stack of the
+     * @return a new MetaItem that could be applied to an item stack of the
      * specified material
      */
-    ItemMeta getItemMeta(final Material material) {
+    MetaItem getItemMeta(Material material) {
         Validate.notNull(material, "Material cannot be null");
         return getItemMeta(material, null);
     }
 
-    private ItemMeta getItemMeta(Material material, ItemMeta meta) {
+    private MetaItem getItemMeta(Material material, MetaItem meta) {
+        return new MetaItem(meta);
         //TODO
         /*switch (material) {
             case AIR:
@@ -104,7 +103,7 @@ public final class ItemFactory {
      * data lost if applied) to the specified ItemStack.
      * <p>
      * A {@link SkullMeta} would not be valid for a sword, but a normal {@link
-     * ItemMeta} from an enchanted dirt block would.
+     * MetaItem} from an enchanted dirt block would.
      *
      * @param meta  Meta to check
      * @param stack Item that meta will be applied to
@@ -113,7 +112,7 @@ public final class ItemFactory {
      * @throws IllegalArgumentException if the meta was not created by this
      *                                  factory
      */
-    boolean isApplicable(final ItemMeta meta, final ItemStack stack) throws IllegalArgumentException {
+    boolean isApplicable(MetaItem meta, ItemStack stack) throws IllegalArgumentException {
         if (stack == null) {
             return false;
         }
@@ -125,7 +124,7 @@ public final class ItemFactory {
      * data lost if applied) to the specified Material.
      * <p>
      * A {@link SkullMeta} would not be valid for a sword, but a normal {@link
-     * ItemMeta} from an enchanted dirt block would.
+     * MetaItem} from an enchanted dirt block would.
      *
      * @param meta     Meta to check
      * @param material Material that meta will be applied to
@@ -134,15 +133,12 @@ public final class ItemFactory {
      * @throws IllegalArgumentException if the meta was not created by this
      *                                  factory
      */
-    boolean isApplicable(final ItemMeta meta, final Material material) throws IllegalArgumentException {
+    boolean isApplicable(MetaItem meta, Material material) throws IllegalArgumentException {
         if (material == null || meta == null) {
             return false;
         }
-        if (!(meta instanceof ItemMeta)) {
-            throw new IllegalArgumentException("Meta of " + meta.getClass().toString() + " not created by " + ItemFactory.class.getName());
-        }
 
-        return ((ItemMeta) meta).applicableTo(material);
+        return meta.applicableTo(material);
     }
 
     /**
@@ -156,24 +152,23 @@ public final class ItemFactory {
      * @throws IllegalArgumentException if either meta was not created by this
      *                                  factory
      */
-    boolean equals(final ItemMeta meta1, final ItemMeta meta2) throws IllegalArgumentException {
+    public boolean equals(MetaItem meta1, MetaItem meta2) throws IllegalArgumentException {
         if (meta1 == meta2) {
             return true;
         }
-        if (meta1 != null && !(meta1 instanceof ItemMeta)) {
-            throw new IllegalArgumentException("First meta of " + meta1.getClass().getName() + " does not belong to " + ItemFactory.class.getName());
-        }
-        if (meta2 != null && !(meta2 instanceof ItemMeta)) {
-            throw new IllegalArgumentException("Second meta " + meta2.getClass().getName() + " does not belong to " + ItemFactory.class.getName());
-        }
+
         if (meta1 == null) {
-            return ((ItemMeta) meta2).isEmpty();
+            return meta2.isEmpty();
         }
         if (meta2 == null) {
-            return ((ItemMeta) meta1).isEmpty();
+            return meta1.isEmpty();
         }
 
         return meta1.equalsCommon(meta2) && meta1.notUncommon(meta2) && meta2.notUncommon(meta1);
+    }
+
+    public static ItemFactory instance() {
+        return instance;
     }
 
     /**
@@ -186,7 +181,7 @@ public final class ItemFactory {
      * <p>
      * Example, if a {@link SkullMeta} is being applied to a book, this method
      * would return a {@link BookMeta} containing all information in the
-     * specified meta that is applicable to an {@link ItemMeta}, the highest
+     * specified meta that is applicable to an {@link MetaItem}, the highest
      * common interface.
      *
      * @param meta  the meta to convert
@@ -197,7 +192,7 @@ public final class ItemFactory {
      * @throws IllegalArgumentException if the specified meta was not created
      *                                  by this factory
      */
-    ItemMeta asMetaFor(final ItemMeta meta, final ItemStack stack) throws IllegalArgumentException {
+    MetaItem asMetaFor(final MetaItem meta, final ItemStack stack) throws IllegalArgumentException {
         Validate.notNull(stack, "Stack cannot be null");
         return asMetaFor(meta, stack.getType());
     }
@@ -212,7 +207,7 @@ public final class ItemFactory {
      * <p>
      * Example, if a {@link SkullMeta} is being applied to a book, this method
      * would return a {@link BookMeta} containing all information in the
-     * specified meta that is applicable to an {@link ItemMeta}, the highest
+     * specified meta that is applicable to an {@link MetaItem}, the highest
      * common interface.
      *
      * @param meta     the meta to convert
@@ -222,7 +217,7 @@ public final class ItemFactory {
      * @throws IllegalArgumentException if the specified meta was not created
      *                                  by this factory
      */
-    ItemMeta asMetaFor(final ItemMeta meta, final Material material) throws IllegalArgumentException {
+    MetaItem asMetaFor(final MetaItem meta, final Material material) throws IllegalArgumentException {
         Validate.notNull(material, "Material cannot be null");
         if (meta == null) {
             throw new IllegalArgumentException("Meta of " + "null" + " not created by " + ItemFactory.class.getName());

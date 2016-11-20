@@ -35,7 +35,7 @@ public class PermissibleBase implements Permissible {
 
     public void setOp(boolean value) {
         if (opable == null) {
-            throw new UnsupportedOperationException("Cannot change op value as no ServerOperator is set");
+            throw new UnsupportedOperationException("Cannot change op value as no ServerOperator is offset");
         } else {
             opable.setOp(value);
         }

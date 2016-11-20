@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.nukkit.Nukkit;
 import io.nukkit.configuration.serialization.ConfigurationSerializable;
 import io.nukkit.item.enchantments.Enchantment;
-import io.nukkit.item.meta.ItemMeta;
+import io.nukkit.item.meta.MetaItem;
 import io.nukkit.material.Material;
 import io.nukkit.material.MaterialData;
 import io.nukkit.util.Utility;
@@ -21,7 +21,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
     private int amount = 0;
     private MaterialData data = null;
     private short durability = 0;
-    private ItemMeta meta;
+    private MetaItem meta;
 
     @Utility
     protected ItemStack() {
@@ -370,7 +370,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
      * @return True if this has the given enchantment
      */
     public boolean containsEnchantment(Enchantment ench) {
-        return meta == null ? false : meta.hasEnchant(ench);
+        return meta != null && meta.hasEnchant(ench);
     }
 
     /**
@@ -486,7 +486,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
 
     @Utility
     public Map<String, Object> serialize() {
-        Map<String, Object> result = new LinkedHashMap<String, Object>();
+        Map<String, Object> result = new LinkedHashMap<>();
 
         result.put("type", getType().name());
 
@@ -498,7 +498,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
             result.put("amount", getAmount());
         }
 
-        ItemMeta meta = getItemMeta();
+        MetaItem meta = getItemMeta();
         if (!Nukkit.getItemFactory().equals(meta, null)) {
             result.put("meta", meta);
         }
@@ -542,10 +542,10 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
                     }
                 }
             }
-        } else if (args.containsKey("meta")) { // We cannot and will not have meta when enchantments (pre-ItemMeta) exist
+        } else if (args.containsKey("meta")) { // We cannot and will not have meta when enchantments (pre-MetaItem) exist
             Object raw = args.get("meta");
-            if (raw instanceof ItemMeta) {
-                result.setItemMeta((ItemMeta) raw);
+            if (raw instanceof MetaItem) {
+                result.setItemMeta((MetaItem) raw);
             }
         }
 
@@ -553,11 +553,11 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
     }
 
     /**
-     * Get a copy of this ItemStack's {@link ItemMeta}.
+     * Get a copy of this ItemStack's {@link MetaItem}.
      *
      * @return a copy of the current ItemStack's ItemData
      */
-    public ItemMeta getItemMeta() {
+    public MetaItem getItemMeta() {
         return this.meta == null ? Nukkit.getItemFactory().getItemMeta(getType0()) : this.meta.clone();
     }
 
@@ -573,30 +573,30 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
     /**
      * Set the ItemMeta of this ItemStack.
      *
-     * @param itemMeta new ItemMeta, or null to indicate meta data be cleared.
+     * @param metaItem new ItemMeta, or null to indicate meta data be cleared.
      * @return True if successfully applied ItemMeta, see {@link
-     * ItemFactory#isApplicable(ItemMeta, ItemStack)}
+     * ItemFactory#isApplicable(MetaItem, ItemStack)}
      * @throws IllegalArgumentException if the item meta was not created by
      *                                  the {@link ItemFactory}
      */
-    public boolean setItemMeta(ItemMeta itemMeta) {
-        return setItemMeta0(itemMeta, getType0());
+    public boolean setItemMeta(MetaItem metaItem) {
+        return setItemMeta0(metaItem, getType0());
     }
 
     /*
      * Cannot be overridden, so it's safe for constructor call
      */
-    private boolean setItemMeta0(ItemMeta itemMeta, Material material) {
-        if (itemMeta == null) {
+    private boolean setItemMeta0(MetaItem metaItem, Material material) {
+        if (metaItem == null) {
             this.meta = null;
             return true;
         }
-        if (!Nukkit.getItemFactory().isApplicable(itemMeta, material)) {
+        if (!Nukkit.getItemFactory().isApplicable(metaItem, material)) {
             return false;
         }
-        this.meta = Nukkit.getItemFactory().asMetaFor(itemMeta, material);
-        if (this.meta == itemMeta) {
-            this.meta = itemMeta.clone();
+        this.meta = Nukkit.getItemFactory().asMetaFor(metaItem, material);
+        if (this.meta == metaItem) {
+            this.meta = metaItem.clone();
         }
 
         return true;
