@@ -1,7 +1,5 @@
 package io.nukkit.scheduler;
 
-
-import io.nukkit.plugin.Plugin;
 import org.apache.commons.lang.UnhandledException;
 
 import java.util.Iterator;
@@ -12,8 +10,8 @@ class AsyncTask extends Task {
     private final LinkedList<Worker> workers = new LinkedList<>();
     private final Map<Integer, Task> runners;
 
-    AsyncTask(Map<Integer, Task> runners, Plugin plugin, Runnable task, int id, long delay) {
-        super(plugin, task, id, delay);
+    AsyncTask(Map<Integer, Task> runners, TaskOwner owner, Runnable task, int id, long delay) {
+        super(owner, task, id, delay);
         this.runners = runners;
     }
 
@@ -40,7 +38,7 @@ class AsyncTask extends Task {
                 }
 
                 @Override
-                public Plugin getOwner() {
+                public TaskOwner getOwner() {
                     return AsyncTask.this.getOwner();
                 }
             });
@@ -52,7 +50,7 @@ class AsyncTask extends Task {
             super.run();
         } catch (Throwable e) {
             throwable = e;
-            throw new UnhandledException(String.format("Plugin %s generated an exception while executing task %s", this.getOwner().getDescription().getFullName(), this.getTaskId()), e);
+            throw new UnhandledException(String.format("Owner %s generated an exception while executing task %s", this.getOwner().toString(), this.getTaskId()), e);
         } finally {
             synchronized (this.workers) {
                 try {
@@ -68,7 +66,7 @@ class AsyncTask extends Task {
                     }
 
                     if (!removed) {
-                        throw new IllegalStateException(String.format("Unable to remove worker %s on task %s for %s", thread.getName(), this.getTaskId(), this.getOwner().getDescription().getFullName()), throwable);
+                        throw new IllegalStateException(String.format("Unable to remove worker %s on task %s for %s: %s", thread.getName(), this.getTaskId(), this.getOwner().toString(), throwable));
                     }
                 } finally {
                     if (this.getPeriod() < 0L && this.workers.isEmpty()) {

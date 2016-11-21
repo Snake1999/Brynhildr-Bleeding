@@ -1,8 +1,5 @@
 package io.nukkit.scheduler;
 
-
-import io.nukkit.plugin.Plugin;
-
 import java.util.concurrent.*;
 
 class NukkitFuture extends Task implements Future {
@@ -10,8 +7,8 @@ class NukkitFuture extends Task implements Future {
     private Object value;
     private Exception exception = null;
 
-    NukkitFuture(Callable callable, Plugin plugin, int id) {
-        super(plugin, null, id, -1L);
+    NukkitFuture(Callable callable, TaskOwner owner, int id) {
+        super(owner, null, id, -1L);
         this.callable = callable;
     }
 

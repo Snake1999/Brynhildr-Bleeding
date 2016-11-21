@@ -1,15 +1,13 @@
 package io.nukkit.scheduler;
 
-
 import io.nukkit.Nukkit;
-import io.nukkit.plugin.Plugin;
 
 class Task implements Runnable {
     private volatile Task next;
     private volatile long period;
     private long nextRun;
     private final Runnable task;
-    private final Plugin plugin;
+    private final TaskOwner owner;
     private final int id;
 
     Task() {
@@ -20,9 +18,9 @@ class Task implements Runnable {
         this(null, task, -1, -1L);
     }
 
-    Task(Plugin plugin, Runnable task, int id, long period) {
+    Task(TaskOwner owner, Runnable task, int id, long period) {
         this.next = null;
-        this.plugin = plugin;
+        this.owner = owner;
         this.task = task;
         this.id = id;
         this.period = period;
@@ -32,8 +30,8 @@ class Task implements Runnable {
         return this.id;
     }
 
-    public final Plugin getOwner() {
-        return this.plugin;
+    public final TaskOwner getOwner() {
+        return this.owner;
     }
 
     public boolean isSync() {

@@ -5,6 +5,7 @@ import io.nukkit.Server;
 import io.nukkit.command.TabExecutor;
 import io.nukkit.configuration.file.FileConfiguration;
 import io.nukkit.generator.ChunkGenerator;
+import io.nukkit.scheduler.TaskOwner;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -15,7 +16,7 @@ import java.io.InputStream;
  * <p>
  * The use of {@link PluginBase} is recommended for actual Implementation
  */
-public interface Plugin extends TabExecutor, ServiceOwner {
+public interface Plugin extends TabExecutor, ServiceOwner, TaskOwner {
     /**
      * Returns the folder that the plugin data's files are located in. The
      * folder may not yet exist.

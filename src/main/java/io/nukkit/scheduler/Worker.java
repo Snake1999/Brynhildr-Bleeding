@@ -1,7 +1,5 @@
 package io.nukkit.scheduler;
 
-import io.nukkit.plugin.Plugin;
-
 /**
  * Represents a worker thread for the scheduler. This gives information about
  * the Thread object for the task, owner of the task and the taskId.
@@ -22,7 +20,7 @@ public interface Worker {
      *
      * @return The Plugin that owns the task
      */
-    Plugin getOwner();
+    TaskOwner getOwner();
 
     /**
      * Returns the thread for the worker.

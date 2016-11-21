@@ -1,16 +1,14 @@
 package io.nukkit.scheduler;
 
-import io.nukkit.plugin.Plugin;
-
 class AsyncDebugger {
     private AsyncDebugger next = null;
     private final int expiry;
-    private final Plugin plugin;
+    private final TaskOwner owner;
     private final Class clazz;
 
-    AsyncDebugger(int expiry, Plugin plugin, Class clazz) {
+    AsyncDebugger(int expiry, TaskOwner owner, Class clazz) {
         this.expiry = expiry;
-        this.plugin = plugin;
+        this.owner = owner;
         this.clazz = clazz;
     }
 
@@ -33,7 +31,7 @@ class AsyncDebugger {
 
     StringBuilder debugTo(StringBuilder string) {
         for (AsyncDebugger next = this; next != null; next = next.next) {
-            string.append(next.plugin.getDescription().getName()).append(':').append(next.clazz.getName()).append('@').append(next.expiry).append(',');
+            string.append(next.owner.toString()).append(':').append(next.clazz.getName()).append('@').append(next.expiry).append(',');
         }
 
         return string;

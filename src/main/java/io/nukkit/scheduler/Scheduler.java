@@ -1,7 +1,6 @@
 package io.nukkit.scheduler;
 
-import io.nukkit.plugin.IllegalPluginAccessException;
-import io.nukkit.plugin.Plugin;
+import io.nukkit.Nukkit;
 import org.apache.commons.lang.Validate;
 import org.apache.logging.log4j.Level;
 
@@ -43,52 +42,52 @@ public class Scheduler {
         this.debugTail = this.debugHead;
     }
 
-    public int scheduleSyncDelayedTask(Plugin plugin, Runnable task) {
-        return this.scheduleSyncDelayedTask(plugin, task, 0L);
+    public int scheduleSyncDelayedTask(TaskOwner owner, Runnable task) {
+        return this.scheduleSyncDelayedTask(owner, task, 0L);
     }
 
-    public Task runTask(Plugin plugin, Runnable runnable) {
-        return this.runTaskLater(plugin, runnable, 0L);
-    }
-
-    /**
-     * @deprecated
-     */
-    @Deprecated
-    public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task) {
-        return this.scheduleAsyncDelayedTask(plugin, task, 0L);
-    }
-
-    public Task runTaskAsynchronously(Plugin plugin, Runnable runnable) {
-        return this.runTaskLaterAsynchronously(plugin, runnable, 0L);
-    }
-
-    public int scheduleSyncDelayedTask(Plugin plugin, Runnable task, long delay) {
-        return this.scheduleSyncRepeatingTask(plugin, task, delay, -1L);
-    }
-
-    public Task runTaskLater(Plugin plugin, Runnable runnable, long delay) {
-        return this.runTaskTimer(plugin, runnable, delay, -1L);
+    public Task runTask(TaskOwner owner, Runnable runnable) {
+        return this.runTaskLater(owner, runnable, 0L);
     }
 
     /**
      * @deprecated
      */
     @Deprecated
-    public int scheduleAsyncDelayedTask(Plugin plugin, Runnable task, long delay) {
-        return this.scheduleAsyncRepeatingTask(plugin, task, delay, -1L);
+    public int scheduleAsyncDelayedTask(TaskOwner owner, Runnable task) {
+        return this.scheduleAsyncDelayedTask(owner, task, 0L);
     }
 
-    public Task runTaskLaterAsynchronously(Plugin plugin, Runnable runnable, long delay) {
-        return this.runTaskTimerAsynchronously(plugin, runnable, delay, -1L);
+    public Task runTaskAsynchronously(TaskOwner owner, Runnable runnable) {
+        return this.runTaskLaterAsynchronously(owner, runnable, 0L);
     }
 
-    public int scheduleSyncRepeatingTask(Plugin plugin, Runnable runnable, long delay, long period) {
-        return this.runTaskTimer(plugin, runnable, delay, period).getTaskId();
+    public int scheduleSyncDelayedTask(TaskOwner owner, Runnable task, long delay) {
+        return this.scheduleSyncRepeatingTask(owner, task, delay, -1L);
     }
 
-    public Task runTaskTimer(Plugin plugin, Runnable runnable, long delay, long period) {
-        validate(plugin, runnable);
+    public Task runTaskLater(TaskOwner owner, Runnable runnable, long delay) {
+        return this.runTaskTimer(owner, runnable, delay, -1L);
+    }
+
+    /**
+     * @deprecated
+     */
+    @Deprecated
+    public int scheduleAsyncDelayedTask(TaskOwner owner, Runnable task, long delay) {
+        return this.scheduleAsyncRepeatingTask(owner, task, delay, -1L);
+    }
+
+    public Task runTaskLaterAsynchronously(TaskOwner owner, Runnable runnable, long delay) {
+        return this.runTaskTimerAsynchronously(owner, runnable, delay, -1L);
+    }
+
+    public int scheduleSyncRepeatingTask(TaskOwner owner, Runnable runnable, long delay, long period) {
+        return this.runTaskTimer(owner, runnable, delay, period).getTaskId();
+    }
+
+    public Task runTaskTimer(TaskOwner owner, Runnable runnable, long delay, long period) {
+        validate(owner, runnable);
         if (delay < 0L) {
             delay = 0L;
         }
@@ -99,19 +98,19 @@ public class Scheduler {
             period = -1L;
         }
 
-        return this.handle(new Task(plugin, runnable, this.nextId(), period), delay);
+        return this.handle(new Task(owner, runnable, this.nextId(), period), delay);
     }
 
     /**
      * @deprecated
      */
     @Deprecated
-    public int scheduleAsyncRepeatingTask(Plugin plugin, Runnable runnable, long delay, long period) {
-        return this.runTaskTimerAsynchronously(plugin, runnable, delay, period).getTaskId();
+    public int scheduleAsyncRepeatingTask(TaskOwner owner, Runnable runnable, long delay, long period) {
+        return this.runTaskTimerAsynchronously(owner, runnable, delay, period).getTaskId();
     }
 
-    public Task runTaskTimerAsynchronously(Plugin plugin, Runnable runnable, long delay, long period) {
-        validate(plugin, runnable);
+    public Task runTaskTimerAsynchronously(TaskOwner owner, Runnable runnable, long delay, long period) {
+        validate(owner, runnable);
         if (delay < 0L) {
             delay = 0L;
         }
@@ -122,12 +121,12 @@ public class Scheduler {
             period = -1L;
         }
 
-        return this.handle(new AsyncTask(this.runners, plugin, runnable, this.nextId(), period), delay);
+        return this.handle(new AsyncTask(this.runners, owner, runnable, this.nextId(), period), delay);
     }
 
-    public Future callSyncMethod(Plugin plugin, Callable task) {
-        validate(plugin, task);
-        NukkitFuture future = new NukkitFuture(task, plugin, this.nextId());
+    public Future callSyncMethod(TaskOwner owner, Callable task) {
+        validate(owner, task);
+        NukkitFuture future = new NukkitFuture(task, owner, this.nextId());
         this.handle(future, 0L);
         return future;
     }
@@ -181,8 +180,8 @@ public class Scheduler {
         }
     }
 
-    public void cancelTasks(final Plugin plugin) {
-        Validate.notNull(plugin, "Cannot cancel tasks of null plugin");
+    public void cancelTasks(final TaskOwner owner) {
+        Validate.notNull(owner, "Cannot cancel tasks of null plugin");
         Task task = new Task(new Runnable() {
             public void run() {
                 this.check(Scheduler.this.pending);
@@ -194,7 +193,7 @@ public class Scheduler {
 
                 while (tasks.hasNext()) {
                     Task task = (Task) tasks.next();
-                    if (task.getOwner().equals(plugin)) {
+                    if (task.getOwner().equals(owner)) {
                         task.cancel0();
                         tasks.remove();
                         if (task.isSync()) {
@@ -213,7 +212,7 @@ public class Scheduler {
                 return;
             }
 
-            if (runner.getTaskId() != -1 && runner.getOwner().equals(plugin)) {
+            if (runner.getTaskId() != -1 && runner.getOwner().equals(owner)) {
                 runner.cancel0();
             }
         }
@@ -222,7 +221,7 @@ public class Scheduler {
 
         while (iterator.hasNext()) {
             runner = (Task) iterator.next();
-            if (runner.getOwner().equals(plugin)) {
+            if (runner.getOwner().equals(owner)) {
                 runner.cancel0();
             }
         }
@@ -230,21 +229,19 @@ public class Scheduler {
     }
 
     public void cancelAllTasks() {
-        Task task = new Task(new Runnable() {
-            public void run() {
-                Iterator it = Scheduler.this.runners.values().iterator();
+        Task task = new Task(() -> {
+            Iterator it = Scheduler.this.runners.values().iterator();
 
-                while (it.hasNext()) {
-                    Task task = (Task) it.next();
-                    task.cancel0();
-                    if (task.isSync()) {
-                        it.remove();
-                    }
+            while (it.hasNext()) {
+                Task task1 = (Task) it.next();
+                task1.cancel0();
+                if (task1.isSync()) {
+                    it.remove();
                 }
-
-                Scheduler.this.pending.clear();
-                Scheduler.this.temp.clear();
             }
+
+            Scheduler.this.pending.clear();
+            Scheduler.this.temp.clear();
         });
         this.handle(task, 0L);
 
@@ -253,12 +250,7 @@ public class Scheduler {
             runner.cancel0();
         }
 
-        Iterator iterator = this.runners.values().iterator();
-
-        while (iterator.hasNext()) {
-            runner = (Task) iterator.next();
-            runner.cancel0();
-        }
+        this.runners.values().forEach(Task::cancel0);
 
     }
 
@@ -361,7 +353,7 @@ public class Scheduler {
                     try {
                         task.run();
                     } catch (Throwable e) {
-                        task.getOwner().getLogger().log(Level.WARN, String.format("Task #%s for %s generated an exception", task.getTaskId(), task.getOwner().getDescription().getFullName()), e);
+                        Nukkit.getLogger().log(Level.WARN, String.format("Task #%s for %s generated an exception", task.getTaskId(), task.getOwner().toString()), e);
                     }
 
                     this.parsePending();
@@ -401,11 +393,11 @@ public class Scheduler {
         return task;
     }
 
-    private static void validate(Plugin plugin, Object task) {
-        Validate.notNull(plugin, "Plugin cannot be null");
+    private static void validate(TaskOwner owner, Object task) {
+        Validate.notNull(owner, "Owner cannot be null");
         Validate.notNull(task, "Task cannot be null");
-        if (!plugin.isEnabled()) {
-            throw new IllegalPluginAccessException("Plugin attempted to register task while disabled");
+        if (!owner.isReadyForTasks()) {
+            throw new IllegalStateException("Attempted to register task while owner not ready. Is plugin disabled?");
         }
     }
 
@@ -452,71 +444,71 @@ public class Scheduler {
      * @deprecated
      */
     @Deprecated
-    public int scheduleSyncDelayedTask(Plugin plugin, NukkitRunnable task, long delay) {
-        return this.scheduleSyncDelayedTask(plugin, (Runnable) task, delay);
+    public int scheduleSyncDelayedTask(TaskOwner owner, NukkitRunnable task, long delay) {
+        return this.scheduleSyncDelayedTask(owner, (Runnable) task, delay);
     }
 
     /**
      * @deprecated
      */
     @Deprecated
-    public int scheduleSyncDelayedTask(Plugin plugin, NukkitRunnable task) {
-        return this.scheduleSyncDelayedTask(plugin, (Runnable) task);
+    public int scheduleSyncDelayedTask(TaskOwner owner, NukkitRunnable task) {
+        return this.scheduleSyncDelayedTask(owner, (Runnable) task);
     }
 
     /**
      * @deprecated
      */
     @Deprecated
-    public int scheduleSyncRepeatingTask(Plugin plugin, NukkitRunnable task, long delay, long period) {
-        return this.scheduleSyncRepeatingTask(plugin, (Runnable) task, delay, period);
+    public int scheduleSyncRepeatingTask(TaskOwner owner, NukkitRunnable task, long delay, long period) {
+        return this.scheduleSyncRepeatingTask(owner, (Runnable) task, delay, period);
     }
 
     /**
      * @deprecated
      */
     @Deprecated
-    public Task runTask(Plugin plugin, NukkitRunnable task) throws IllegalArgumentException {
-        return this.runTask(plugin, (Runnable) task);
+    public Task runTask(TaskOwner owner, NukkitRunnable task) throws IllegalArgumentException {
+        return this.runTask(owner, (Runnable) task);
     }
 
     /**
      * @deprecated
      */
     @Deprecated
-    public Task runTaskAsynchronously(Plugin plugin, NukkitRunnable task) throws IllegalArgumentException {
-        return this.runTaskAsynchronously(plugin, (Runnable) task);
+    public Task runTaskAsynchronously(TaskOwner owner, NukkitRunnable task) throws IllegalArgumentException {
+        return this.runTaskAsynchronously(owner, (Runnable) task);
     }
 
     /**
      * @deprecated
      */
     @Deprecated
-    public Task runTaskLater(Plugin plugin, NukkitRunnable task, long delay) throws IllegalArgumentException {
-        return this.runTaskLater(plugin, (Runnable) task, delay);
+    public Task runTaskLater(TaskOwner owner, NukkitRunnable task, long delay) throws IllegalArgumentException {
+        return this.runTaskLater(owner, (Runnable) task, delay);
     }
 
     /**
      * @deprecated
      */
     @Deprecated
-    public Task runTaskLaterAsynchronously(Plugin plugin, NukkitRunnable task, long delay) throws IllegalArgumentException {
-        return this.runTaskLaterAsynchronously(plugin, (Runnable) task, delay);
+    public Task runTaskLaterAsynchronously(TaskOwner owner, NukkitRunnable task, long delay) throws IllegalArgumentException {
+        return this.runTaskLaterAsynchronously(owner, (Runnable) task, delay);
     }
 
     /**
      * @deprecated
      */
     @Deprecated
-    public Task runTaskTimer(Plugin plugin, NukkitRunnable task, long delay, long period) throws IllegalArgumentException {
-        return this.runTaskTimer(plugin, (Runnable) task, delay, period);
+    public Task runTaskTimer(TaskOwner owner, NukkitRunnable task, long delay, long period) throws IllegalArgumentException {
+        return this.runTaskTimer(owner, (Runnable) task, delay, period);
     }
 
     /**
      * @deprecated
      */
     @Deprecated
-    public Task runTaskTimerAsynchronously(Plugin plugin, NukkitRunnable task, long delay, long period) throws IllegalArgumentException {
-        return this.runTaskTimerAsynchronously(plugin, (Runnable) task, delay, period);
+    public Task runTaskTimerAsynchronously(TaskOwner owner, NukkitRunnable task, long delay, long period) throws IllegalArgumentException {
+        return this.runTaskTimerAsynchronously(owner, (Runnable) task, delay, period);
     }
 }

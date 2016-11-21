@@ -32,4 +32,9 @@ public abstract class PluginBase implements Plugin {
     public final String getName() {
         return getDescription().getName();
     }
+
+    @Override
+    public boolean isReadyForTasks() {
+        return isEnabled();
+    }
 }
