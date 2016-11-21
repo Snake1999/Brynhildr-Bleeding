@@ -15,7 +15,7 @@ import java.io.InputStream;
  * <p>
  * The use of {@link PluginBase} is recommended for actual Implementation
  */
-public interface Plugin extends TabExecutor {
+public interface Plugin extends TabExecutor, ServiceOwner {
     /**
      * Returns the folder that the plugin data's files are located in. The
      * folder may not yet exist.

@@ -106,7 +106,9 @@ public final class SimplePluginManager implements PluginManager {
         Map<String, Collection<String>> softDependencies = new HashMap<>();
 
         // This is where it figures out all possible plugins
-        for (File file : directory.listFiles()) {
+        File[] files = directory.listFiles();
+        if(files == null) return new Plugin[0];
+        for (File file : files) {
             PluginLoader loader = null;
             for (Pattern filter : filters) {
                 Matcher match = filter.matcher(file.getName());
@@ -117,7 +119,7 @@ public final class SimplePluginManager implements PluginManager {
 
             if (loader == null) continue;
 
-            PluginDescriptionFile description = null;
+            PluginDescriptionFile description;
             try {
                 description = loader.getPluginDescription(file);
                 String name = description.getName();
@@ -421,7 +423,7 @@ public final class SimplePluginManager implements PluginManager {
             }
 
             try {
-                server.getServicesManager().unregisterAll(plugin);
+                server.getServiceManager().unregisterAll(plugin);
             } catch (Throwable ex) {
                 server.getLogger().log(Level.ERROR, "Error occurred (in the plugin loader) while unregistering services for " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
             }

@@ -10,7 +10,7 @@ import io.nukkit.configuration.file.YamlConfiguration;
 import io.nukkit.entity.Player;
 import io.nukkit.item.ItemFactory;
 import io.nukkit.plugin.PluginManager;
-import io.nukkit.plugin.ServicesManager;
+import io.nukkit.plugin.ServiceManager;
 import io.nukkit.plugin.messaging.Messenger;
 import io.nukkit.scheduler.Scheduler;
 import io.nukkit.util.ServerShutdownThread;
@@ -187,7 +187,7 @@ public class Server implements Runnable {
         //TODO
     }
 
-    public ServicesManager getServicesManager() {
+    public ServiceManager getServiceManager() {
         return null;
         //TODO
     }

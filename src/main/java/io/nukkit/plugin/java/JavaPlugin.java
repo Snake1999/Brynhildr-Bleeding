@@ -17,7 +17,6 @@ import io.nukkit.configuration.file.FileConfiguration;
 import io.nukkit.configuration.file.YamlConfiguration;
 import io.nukkit.generator.ChunkGenerator;
 import io.nukkit.plugin.*;
-import io.nukkit.util.Warning;
 import org.apache.commons.lang.Validate;
 import org.apache.logging.log4j.Level;
 
@@ -307,18 +306,6 @@ public abstract class JavaPlugin extends PluginBase {
         }
     }
 
-    /**
-     * @deprecated This method is legacy and will be removed - it must be
-     * replaced by the specially provided constructor(s).
-     */
-    @Deprecated
-    protected final void initialize(PluginLoader loader, Server server, PluginDescriptionFile description, File dataFolder, File file, ClassLoader classLoader) {
-        if (server.getWarningState() == Warning.WarningState.OFF) {
-            return;
-        }
-        getLogger().log(Level.WARN, getClass().getName() + " is already initialized", server.getWarningState() == Warning.WarningState.DEFAULT ? null : new AuthorNagException("Explicit initialization"));
-    }
-
     final void init(PluginLoader loader, Server server, PluginDescriptionFile description, File dataFolder, File file, ClassLoader classLoader) {
         this.loader = loader;
         this.server = server;
@@ -364,18 +351,6 @@ public abstract class JavaPlugin extends PluginBase {
         input = input.replaceAll("\\{DIR\\}", dataFolder.getPath().replaceAll("\\\\", "/") + "/");
         input = input.replaceAll("\\{NAME\\}", description.getName().replaceAll("[^\\w_-]", ""));
         return input;
-    }
-
-    /**
-     * Gets the initialization status of this plugin
-     *
-     * @return true if this plugin is initialized, otherwise false
-     * @deprecated This method cannot return false, as {@link
-     * JavaPlugin} is now initialized in the constructor.
-     */
-    @Deprecated
-    public final boolean isInitialized() {
-        return true;
     }
 
     /**

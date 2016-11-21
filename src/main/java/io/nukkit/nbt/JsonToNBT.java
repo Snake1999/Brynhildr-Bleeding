@@ -47,7 +47,7 @@ public class JsonToNBT {
                         throw new NBTException("Unbalanced curly brackets {}: " + str);
                     }
 
-                    if (c0 == 93 && (stack.isEmpty() || (Character) stack.pop() != 91)) {
+                    if (c0 == 93 && (stack.isEmpty() || stack.pop() != 91)) {
                         throw new NBTException("Unbalanced square brackets []: " + str);
                     }
                 } else {
@@ -188,11 +188,11 @@ public class JsonToNBT {
                 }
             } else if (!flag) {
                 if (c0 != 123 && c0 != 91) {
-                    if (c0 == 125 && (stack.isEmpty() || (Character) stack.pop() != 123)) {
+                    if (c0 == 125 && (stack.isEmpty() || stack.pop() != 123)) {
                         throw new NBTException("Unbalanced curly brackets {}: " + str);
                     }
 
-                    if (c0 == 93 && (stack.isEmpty() || (Character) stack.pop() != 91)) {
+                    if (c0 == 93 && (stack.isEmpty() || stack.pop() != 91)) {
                         throw new NBTException("Unbalanced square brackets []: " + str);
                     }
 
