@@ -107,7 +107,10 @@ public final class SimplePluginManager implements PluginManager {
 
         // This is where it figures out all possible plugins
         File[] files = directory.listFiles();
-        if(files == null) return new Plugin[0];
+        if (files == null) {
+            return new Plugin[0];
+        }
+
         for (File file : files) {
             PluginLoader loader = null;
             for (Pattern filter : filters) {

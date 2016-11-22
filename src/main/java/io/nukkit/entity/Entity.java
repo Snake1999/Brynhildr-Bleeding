@@ -6,12 +6,18 @@ package io.nukkit.entity;
  */
 public class Entity {
 
-    /** Entity position X */
+    /**
+     * Entity position X
+     */
     public double posX;
 
-    /** Entity position Y */
+    /**
+     * Entity position Y
+     */
     public double posY;
 
-    /** Entity position Z */
+    /**
+     * Entity position Z
+     */
     public double posZ;
 }
