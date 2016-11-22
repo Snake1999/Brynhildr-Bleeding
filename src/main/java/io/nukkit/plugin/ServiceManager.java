@@ -17,12 +17,12 @@ public interface ServiceManager {
      * Register a provider of a service.
      *
      * @param <T>      Provider
-     * @param serviceClass  service class
-     * @param service service to register
-     * @param owner   owner with the provider
+     * @param service  service class
+     * @param provider provider to register
+     * @param owner    owner with the provider
      * @param priority priority of the provider
      */
-    <T extends Service> void register(Class<T> serviceClass, T service, ServiceOwner owner, ServicePriority priority);
+    <T extends Service> void register(Class<T> service, T provider, ServiceOwner owner, ServicePriority priority);
 
     /**
      * Unregister all the providers registered by a particular plugin.
@@ -34,33 +34,33 @@ public interface ServiceManager {
     /**
      * Unregister a particular provider for a particular service.
      *
-     * @param serviceClass  The service interface
-     * @param service The service provider implementation
+     * @param service  The service interface
+     * @param provider The service provider implementation
      */
-    <T extends Service> void unregister(Class<T> serviceClass, T service);
+    <T extends Service> void unregister(Class<T> service, T provider);
 
     /**
      * Unregister a particular provider.
      *
-     * @param service The service implementation
+     * @param provider The service provider implementation
      */
-    <T extends Service> void unregister(T service);
+    <T extends Service> void unregister(T provider);
 
     /**
      * Queries for a provider. This may return if no provider has been
      * registered for a service. The highest priority provider is returned.
      *
      * @param <T>     The service interface
-     * @param serviceClass Class of the service interface
+     * @param service Class of the service interface
      * @return provider or null
      */
-    <T extends Service> T load(Class<T> serviceClass);
+    <T extends Service> T load(Class<T> service);
 
     /**
      * Queries for a provider registration. This may return if no provider
      * has been registered for a service.
      *
-     * @param <T>     The service interface
+     * @param <T>          The service interface
      * @param serviceClass Class of the service interface
      * @return provider registration or null
      */
@@ -79,10 +79,10 @@ public interface ServiceManager {
      * unmodifiable.
      *
      * @param <T>     The service interface
-     * @param serviceClass Class of the service interface
+     * @param service Class of the service interface
      * @return list of registrations
      */
-    <T extends Service> Collection<RegisteredServiceProvider<T>> getRegistrations(Class<T> serviceClass);
+    <T extends Service> Collection<RegisteredServiceProvider<T>> getRegistrations(Class<T> service);
 
     /**
      * Get a list of known services. A service is known if it has registered
@@ -97,10 +97,10 @@ public interface ServiceManager {
      * check this first only to call <code>load(service)</code> later, as that
      * would be a non-thread safe situation.
      *
-     * @param <T>     service
-     * @param serviceClass service class to check
+     * @param <T>     The service interface
+     * @param service Class of the service interface to check
      * @return whether there has been a registered provider
      */
-    <T extends Service> boolean isProvidedFor(Class<T> serviceClass);
+    <T extends Service> boolean isProvidedFor(Class<T> service);
 
 }
