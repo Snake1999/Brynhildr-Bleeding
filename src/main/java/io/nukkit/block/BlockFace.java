@@ -2,6 +2,27 @@ package io.nukkit.block;
 
 /**
  * Represents the face of a block
+ * <p>
+ * <pre>
+ *      N│ negative Z
+ *       │
+ *       │     positive X
+ * W ──┼─→ E
+ * negative X
+ *       │
+ *      S↓ positive Z
+ * </pre>
+ * <table>
+ * <tr><td>Direction</td><td>As axis </td><td>Yaw<br>(in degree)</td><td>Pitch<br>(in degree)</td></tr>
+ * <tr><td>South    </td><td>Facing Positive Z  </td><td>0.0    </td><td>0.0    </td></tr>
+ * <tr><td>West     </td><td>Facing Negative X  </td><td>90.0   </td><td>0.0    </td></tr>
+ * <tr><td>North    </td><td>Facing Negative Z  </td><td>180.0  </td><td>0.0    </td></tr>
+ * <tr><td>East     </td><td>Facing Positive X  </td><td>270.0  </td><td>0.0    </td></tr>
+ * <tr><td>Up       </td><td>Facing Positive Y  </td><td>Any    </td><td>90.0   </td></tr>
+ * <tr><td>Down     </td><td>Facing Negative Y  </td><td>Any    </td><td>-90.0  </td></tr>
+ * </table>
+ *
+ * @see io.nukkit.util.math.EntityRotation
  */
 public enum BlockFace {
     NORTH(0, 0, -1),
@@ -122,11 +143,9 @@ public enum BlockFace {
 
             case WEST_SOUTH_WEST:
                 return BlockFace.EAST_NORTH_EAST;
-
+            default:
             case SELF:
                 return BlockFace.SELF;
         }
-
-        return BlockFace.SELF;
     }
 }
