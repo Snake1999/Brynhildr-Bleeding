@@ -6,12 +6,14 @@ package io.nukkit.function;
  */
 public interface LazyGate extends LazyBlock {
 
-    void setOpened(boolean value);
+    void setGateOpened(boolean value);
 
-    boolean isOpened();
+    boolean isGateOpened();
 
     default void toggleOpened() {
-        setOpened(!isOpened());
+        setGateOpened(!isGateOpened());
     }
 
+    @Override
+    boolean isValid();
 }

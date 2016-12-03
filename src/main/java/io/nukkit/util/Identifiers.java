@@ -9,6 +9,7 @@ import java.util.Objects;
  * All rights reserved
  */
 public final class Identifiers {
+    private Identifiers() {throw new AssertionError("No instances!");}
 
     public static final BlockIdentifier BLOCK_AIR = ofIdOnly(0);
     public static final BlockIdentifier BLOCK_FENCE_GATE_OAK = ofIdOnly(107);

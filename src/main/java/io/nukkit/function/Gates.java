@@ -12,19 +12,20 @@ import io.nukkit.world.WorldUnique;
  * All rights reserved
  */
 public final class Gates {
+    private Gates() {throw new AssertionError("No instances!");}
 
-    static LazyGate lazyGateAt(WorldSystem sys, WorldUnique world, BlockPos pos) {
+    public static LazyGate lazyGateAt(WorldSystem sys, WorldUnique world, BlockPos pos) {
         return new LazyGate() {
             private BlockIdentifier blockId() {return sys.getOrBlackHole(world).getBlockAt(getBlockPos()).getBlockIdentifier();}
             private void set(BlockIdentifier id) {sys.getOrBlackHole(world).setBlockAt(getBlockPos(), BlockMixed.ofBlockIdentifier(id));}
-            @Override public void setOpened(boolean value) {
+            @Override public void setGateOpened(boolean value) {
                 BlockIdentifier id = blockId();
                 if(Identifiers.isFenceGateBlock(id))
                     if(value != isFenceGateOpened(id.asIntegerMeta())) id = id.withIntegerMeta(toggleFenceGateMeta(id.asIntegerMeta()));
                 // TODO: 2016/12/3 Door
                 set(id);
             }
-            @Override public boolean isOpened() {
+            @Override public boolean isGateOpened() {
                 BlockIdentifier id = blockId();
                 if(Identifiers.isFenceGateBlock(id)) return isFenceGateOpened(id.asIntegerMeta());
                 // TODO: 2016/12/3 Door
@@ -35,6 +36,19 @@ public final class Gates {
             @Override public BlockPos getBlockPos() {return pos;}
         };
     }
+
+    public static void setGateOpenedAt(WorldSystem sys, WorldUnique world, BlockPos pos, boolean value) {
+        LazyGate g = lazyGateAt(sys, world, pos);
+        if (!g.isValid()) return;
+        if (value != g.isGateOpened()) g.setGateOpened(value);
+    }
+
+    public static boolean isGateOpenedAt(WorldSystem sys, WorldUnique world, BlockPos pos) {
+        LazyGate g = lazyGateAt(sys, world, pos);
+        return g.isValid() && g.isGateOpened();
+    }
+
+    /*----------* Internal Part *----------* Do NOT attempt to call or use in plugins *----------*/
 
     private static void rebuildDoor(WorldUnique wu, BlockPos pos) {
 
