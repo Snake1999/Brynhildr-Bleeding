@@ -5,12 +5,12 @@ package io.nukkit.util.math;
  * <p>
  * For pitch:<br>
  * <table>
- * <tr><td>Rotation in degree </td><td>Action  </tr>
- * <tr><td>R = -90.0        </td><td>Facing sky     </tr>
- * <tr><td>-90.0 < R < 0.0  </td><td>Heading up     </tr>
- * <tr><td>R = 0.0          </td><td>Facing horizon </tr>
- * <tr><td>0.0 < R < 90.0   </td><td>Heading down   </tr>
- * <tr><td>R = 90.0         </td><td>Facing earth   </tr>
+ * <tr><td>Pitch<br>(in degree)</td><td>Action  </tr>
+ * <tr><td>P = -90.0        </td><td>Facing sky     </tr>
+ * <tr><td>-90.0 < P < 0.0  </td><td>Heading up     </tr>
+ * <tr><td>P = 0.0          </td><td>Facing horizon </tr>
+ * <tr><td>0.0 < P < 90.0   </td><td>Heading down   </tr>
+ * <tr><td>P = 90.0         </td><td>Facing earth   </tr>
  * </table>
  * When looking straight at the horizon, pitch = 0.0<br>
  * While looking up, pitch decreases. Looking up to sky, pitch reaches its min value -90.0<br>
