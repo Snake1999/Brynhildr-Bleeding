@@ -11,6 +11,7 @@ public interface LazyGate extends LazyBlock {
     boolean isGateOpened();
 
     default void toggleOpened() {
+        if(!isValid()) return;
         setGateOpened(!isGateOpened());
     }
 
