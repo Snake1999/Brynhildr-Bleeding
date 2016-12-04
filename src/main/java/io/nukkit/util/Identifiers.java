@@ -12,7 +12,7 @@ public final class Identifiers {
 
     public static final BlockIdentifier BLOCK_AIR = ofIdOnly(0);
     public static final BlockIdentifier BLOCK_DOOR_OAK = ofIdOnly(64);
-    public static final BlockIdentifier BLOCK_TRAPDOOR_OAK = ofIdOnly(96);
+    public static final BlockIdentifier BLOCK_TRAPDOOR_WOOD = ofIdOnly(96);
     public static final BlockIdentifier BLOCK_FENCE_GATE_OAK = ofIdOnly(107);
     public static final BlockIdentifier BLOCK_TRAPDOOR_IRON = ofIdOnly(167);
     public static final BlockIdentifier BLOCK_FENCE_GATE_SPRUCE = ofIdOnly(183);
@@ -44,6 +44,8 @@ public final class Identifiers {
     public static BlockIdentifier withIntegerMeta(BlockIdentifier id, int integerMeta) {
         return ofIdMeta(id.asIntegerId(), integerMeta);
     }
+
+    /*----------* Internal Part *----------* Do NOT attempt to call or use in plugins *----------*/
 
     private static BlockIdentifier ofIdMeta(int integerId, int integerMeta) {
         return new BlockIdentifier() {

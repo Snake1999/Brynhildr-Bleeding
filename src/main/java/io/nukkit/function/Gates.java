@@ -12,8 +12,9 @@ import static io.nukkit.util.Identifiers.*;
 
 /**
  * Tool for operating doors and fence gates.
- * <p>
- * Notes on door meta:
+ * <p>Details on meta value:
+ * <table border="1"><tr><td>Door Type</td><td>Meaning of Meta Value</td></tr>
+ * <tr><td>Door</td><td>
  * <table>
  * <tr><td>Bit       </td><td>Meaning<br>(Upper part of door)</td><td>Meaning<br>(Lower part of door)</td></tr>
  * <tr><td>bit 4     </td><td>1 to identify 'upper'</td><td>0 to identify 'lower'</td></tr>
@@ -21,25 +22,22 @@ import static io.nukkit.util.Identifiers.*;
  * <tr><td>bit 2     </td><td>0 if not powered, 1 if powered</td><td>bits 2 & 1 together to describe facing</td></tr>
  * <tr><td>bit 1     </td><td>0 if hinge is on the left(default)<br>1 if on the right</td><td>bits 2 & 1 together to describe facing</td></tr>
  * </table>
- * <p>
  * Notes on facing on meta for lower part of doors:
  * <table>
- * <tr><td>Bits 2 & 1<br>(in binary)</td><td>Door direction</td><td>As Axis</td></tr>
+ * <tr><td>Bits 2&1<br>(in binary)</td><td>Door direction</td><td>As Axis</td></tr>
  * <tr><td>00       </td><td>Facing east  </td><td>Facing Positive X</td></tr>
  * <tr><td>01       </td><td>Facing south </td><td>Facing Positive Z</td></tr>
  * <tr><td>10       </td><td>Facing west  </td><td>Facing Negative X</td></tr>
  * <tr><td>11       </td><td>Facing north </td><td>Facing Negative Z</td></tr>
  * </table>
- * <p>
- *
- * Notes on fence gate meta:
+ * </td></tr>
+ * <tr><td>Fence Gate</td><td>
  * <table>
  * <tr><td>Bit       </td><td>Meaning</td></tr>
  * <tr><td>bit 2     </td><td>1 for opened, 0 for closed </td></tr>
  * <tr><td>bit 1,0   </td><td>Bit of fence facing.</td></tr>
  * </table>
- * <p>
- * Notes on Bit of fence facing:
+ * Notes on bits of fence facing:
  * <table>
  * <tr><td>Value<br>(in binary)</td><td>Yaw<br>(in degree)</td><td>Fence Gate Direction</td><td>As Axis</td></tr>
  * <tr><td>00    </td><td>0.0     </td><td>Facing south  </td><td>Facing Positive Z  </td></tr>
@@ -47,8 +45,25 @@ import static io.nukkit.util.Identifiers.*;
  * <tr><td>10    </td><td>180.0   </td><td>Facing north  </td><td>Facing Negative Z  </td></tr>
  * <tr><td>11    </td><td>270.0   </td><td>Facing east   </td><td>Facing Positive X  </td></tr>
  * </table>
- * <p>
- * Data from http://minecraft.gamepedia.com/Door and http://minecraft.gamepedia.com/Fence_Gate
+ * </td></tr>
+ * <tr><td>Trapdoor</td><td>
+ * <table>
+ * <tr><td>Bit      </td><td>Meaning</td></tr>
+ * <tr><td>bit 4    </td><td>1 for trapdoor at top half of block, 0 for bottom half</td></tr>
+ * <tr><td>bit 3    </td><td>1 for trapdoor is open, 0 for closed</td></tr>
+ * <tr><td>bits 2&1 </td><td>Describe which side of block this trapdoor is hanging on</td></tr>
+ * </table>
+ * Notes on bits of trapdoor side:
+ * <table>
+ * <tr><td>Bits 2&1<br>(in binary)</td><td>Meaning</td></tr>
+ * <tr><td>00 </td><td>Trapdoor on the south side of a block</td></tr>
+ * <tr><td>01 </td><td>Trapdoor on the north side of a block</td></tr>
+ * <tr><td>10 </td><td>Trapdoor on the east side of a block</td></tr>
+ * <tr><td>11 </td><td>Trapdoor on the west side of a block</td></tr>
+ * </table>
+ * </td>
+ * </table>
+ * Data from http://minecraft.gamepedia.com/
  *
  * @see io.nukkit.util.math.EntityRotation
  * @see io.nukkit.block.BlockFace
@@ -114,7 +129,7 @@ public final class Gates {
 
     public static boolean isTrapdoorBlock(BlockIdentifier id) {
         Objects.requireNonNull(id);
-        return BLOCK_TRAPDOOR_OAK.equals(id) || BLOCK_TRAPDOOR_IRON.equals(id);
+        return BLOCK_TRAPDOOR_WOOD.equals(id) || BLOCK_TRAPDOOR_IRON.equals(id);
     }
 
     /*----------* Internal Part *----------* Do NOT attempt to call or use in plugins *----------*/
