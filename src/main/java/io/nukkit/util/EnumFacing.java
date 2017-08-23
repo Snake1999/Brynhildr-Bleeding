@@ -20,15 +20,35 @@ public enum EnumFacing {
     EAST(5, 4, 3, "east", AxisDirection.POSITIVE, Axis.X, new Vec3i(1, 0, 0));
 
     /**
+     * All facings in D-U-N-S-W-E order
+     */
+    private static final EnumFacing[] VALUES = new EnumFacing[6];
+    /**
+     * All Facings with horizontal axis in order S-W-N-E
+     */
+    private static final EnumFacing[] HORIZONTALS = new EnumFacing[4];
+    private static final Map<String, EnumFacing> NAME_LOOKUP = Maps.newHashMap();
+
+    static {
+        for (EnumFacing enumfacing : values()) {
+            VALUES[enumfacing.index] = enumfacing;
+
+            if (enumfacing.getAxis().isHorizontal()) {
+                HORIZONTALS[enumfacing.horizontalIndex] = enumfacing;
+            }
+
+            NAME_LOOKUP.put(enumfacing.getName2().toLowerCase(), enumfacing);
+        }
+    }
+
+    /**
      * Ordering index for D-U-N-S-W-E
      */
     private final int index;
-
     /**
      * Index of the opposite Facing in the VALUES array
      */
     private final int opposite;
-
     /**
      * Ordering index for the HORIZONTALS field (S-W-N-E)
      */
@@ -36,22 +56,10 @@ public enum EnumFacing {
     private final String name;
     private final Axis axis;
     private final AxisDirection axisDirection;
-
     /**
      * Normalized Vector that points in the direction of this Facing
      */
     private final Vec3i directionVec;
-
-    /**
-     * All facings in D-U-N-S-W-E order
-     */
-    private static final EnumFacing[] VALUES = new EnumFacing[6];
-
-    /**
-     * All Facings with horizontal axis in order S-W-N-E
-     */
-    private static final EnumFacing[] HORIZONTALS = new EnumFacing[4];
-    private static final Map<String, EnumFacing> NAME_LOOKUP = Maps.newHashMap();
 
     EnumFacing(int indexIn, int oppositeIn, int horizontalIndexIn, String nameIn, AxisDirection axisDirectionIn, Axis axisIn, Vec3i directionVecIn) {
         this.index = indexIn;
@@ -61,6 +69,44 @@ public enum EnumFacing {
         this.axis = axisIn;
         this.axisDirection = axisDirectionIn;
         this.directionVec = directionVecIn;
+    }
+
+    /**
+     * Get a Facing by it's index (0-5). The order is D-U-N-S-W-E. Named getFront for legacy reasons.
+     */
+    public static EnumFacing getFront(int index) {
+        return VALUES[MathHelper.abs_int(index % VALUES.length)];
+    }
+
+    /**
+     * Get a Facing by it's horizontal index (0-3). The order is S-W-N-E.
+     */
+    public static EnumFacing getHorizontal(int p_176731_0_) {
+        return HORIZONTALS[MathHelper.abs_int(p_176731_0_ % HORIZONTALS.length)];
+    }
+
+    /**
+     * Get the Facing corresponding to the given angle (0-360). An angle of 0 is SOUTH, an angle of 90 would be WEST.
+     */
+    public static EnumFacing fromAngle(double angle) {
+        return getHorizontal(MathHelper.floor_double(angle / 90.0D + 0.5D) & 3);
+    }
+
+    /**
+     * Choose a random Facing using the given Random
+     */
+    public static EnumFacing random(Random rand) {
+        return values()[rand.nextInt(values().length)];
+    }
+
+    public static EnumFacing getFacingFromAxis(AxisDirection axisDirectionIn, Axis axisIn) {
+        for (EnumFacing enumfacing : values()) {
+            if (enumfacing.getAxisDirection() == axisDirectionIn && enumfacing.getAxis() == axisIn) {
+                return enumfacing;
+            }
+        }
+
+        throw new IllegalArgumentException("No such direction: " + axisDirectionIn + " " + axisIn);
     }
 
     /**
@@ -164,63 +210,13 @@ public enum EnumFacing {
         return this.axis;
     }
 
-    /**
-     * Get a Facing by it's index (0-5). The order is D-U-N-S-W-E. Named getFront for legacy reasons.
-     */
-    public static EnumFacing getFront(int index) {
-        return VALUES[MathHelper.abs_int(index % VALUES.length)];
-    }
-
-    /**
-     * Get a Facing by it's horizontal index (0-3). The order is S-W-N-E.
-     */
-    public static EnumFacing getHorizontal(int p_176731_0_) {
-        return HORIZONTALS[MathHelper.abs_int(p_176731_0_ % HORIZONTALS.length)];
-    }
-
-    /**
-     * Get the Facing corresponding to the given angle (0-360). An angle of 0 is SOUTH, an angle of 90 would be WEST.
-     */
-    public static EnumFacing fromAngle(double angle) {
-        return getHorizontal(MathHelper.floor_double(angle / 90.0D + 0.5D) & 3);
-    }
-
     public float getHorizontalAngle() {
         return (float) ((this.horizontalIndex & 3) * 90);
-    }
-
-    /**
-     * Choose a random Facing using the given Random
-     */
-    public static EnumFacing random(Random rand) {
-        return values()[rand.nextInt(values().length)];
     }
 
     @Override
     public String toString() {
         return this.name;
-    }
-
-    public static EnumFacing getFacingFromAxis(AxisDirection axisDirectionIn, Axis axisIn) {
-        for (EnumFacing enumfacing : values()) {
-            if (enumfacing.getAxisDirection() == axisDirectionIn && enumfacing.getAxis() == axisIn) {
-                return enumfacing;
-            }
-        }
-
-        throw new IllegalArgumentException("No such direction: " + axisDirectionIn + " " + axisIn);
-    }
-
-    static {
-        for (EnumFacing enumfacing : values()) {
-            VALUES[enumfacing.index] = enumfacing;
-
-            if (enumfacing.getAxis().isHorizontal()) {
-                HORIZONTALS[enumfacing.horizontalIndex] = enumfacing;
-            }
-
-            NAME_LOOKUP.put(enumfacing.getName2().toLowerCase(), enumfacing);
-        }
     }
 
     public enum Axis implements Predicate<EnumFacing> {
@@ -229,6 +225,13 @@ public enum EnumFacing {
         Z("z", Plane.HORIZONTAL);
 
         private static final Map<String, Axis> NAME_LOOKUP = Maps.newHashMap();
+
+        static {
+            for (Axis a : values()) {
+                NAME_LOOKUP.put(a.toString().toLowerCase(), a);
+            }
+        }
+
         private final String name;
         private final Plane plane;
 
@@ -255,12 +258,6 @@ public enum EnumFacing {
 
         public Plane getPlane() {
             return this.plane;
-        }
-
-        static {
-            for (Axis a : values()) {
-                NAME_LOOKUP.put(a.toString().toLowerCase(), a);
-            }
         }
     }
 

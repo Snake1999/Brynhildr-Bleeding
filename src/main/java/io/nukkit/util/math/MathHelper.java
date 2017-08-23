@@ -24,6 +24,24 @@ public class MathHelper {
     private static final double[] ASINE_TAB;
     private static final double[] COS_TAB;
 
+    static {
+        for (int i = 0; i < 65536; ++i) {
+            SIN_TABLE[i] = (float) Math.sin((double) i * Math.PI * 2.0D / 65536.0D);
+        }
+
+        MULTIPLY_DE_BRUIJN_BIT_POSITION = new int[]{0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9};
+        FRAC_BIAS = Double.longBitsToDouble(4805340802404319232L);
+        ASINE_TAB = new double[257];
+        COS_TAB = new double[257];
+
+        for (int j = 0; j < 257; ++j) {
+            double d = (double) j / 256.0D;
+            double angle = Math.asin(d);
+            COS_TAB[j] = Math.cos(angle);
+            ASINE_TAB[j] = angle;
+        }
+    }
+
     /**
      * sin looked up in a table
      */
@@ -382,23 +400,5 @@ public class MathHelper {
         i = i * -1028477387;
         i = i ^ i >>> 16;
         return i;
-    }
-
-    static {
-        for (int i = 0; i < 65536; ++i) {
-            SIN_TABLE[i] = (float) Math.sin((double) i * Math.PI * 2.0D / 65536.0D);
-        }
-
-        MULTIPLY_DE_BRUIJN_BIT_POSITION = new int[]{0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9};
-        FRAC_BIAS = Double.longBitsToDouble(4805340802404319232L);
-        ASINE_TAB = new double[257];
-        COS_TAB = new double[257];
-
-        for (int j = 0; j < 257; ++j) {
-            double d = (double) j / 256.0D;
-            double angle = Math.asin(d);
-            COS_TAB[j] = Math.cos(angle);
-            ASINE_TAB[j] = angle;
-        }
     }
 }

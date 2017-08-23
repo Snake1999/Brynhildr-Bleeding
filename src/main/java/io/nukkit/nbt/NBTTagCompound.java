@@ -14,6 +14,30 @@ import java.util.UUID;
 public class NBTTagCompound extends NBTTag {
     private final Map<String, NBTTag> tagMap = Maps.newHashMap();
 
+    private static void writeEntry(String name, NBTTag data, DataOutput output) throws IOException {
+        output.writeByte(data.getId());
+
+        if (data.getId() != 0) {
+            output.writeUTF(name);
+            data.write(output);
+        }
+    }
+
+    private static byte readType(DataInput input, NBTSizeTracker sizeTracker) throws IOException {
+        return input.readByte();
+    }
+
+    private static String readKey(DataInput input, NBTSizeTracker sizeTracker) throws IOException {
+        return input.readUTF();
+    }
+
+    static NBTTag readNBT(byte id, String key, DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException {
+        NBTTag tag = NBTTag.createNewByType(id);
+
+        tag.read(input, depth, sizeTracker);
+        return tag;
+    }
+
     /**
      * Write the actual data contents of the tag, implemented in NBT extension classes
      */
@@ -191,7 +215,7 @@ public class NBTTagCompound extends NBTTag {
     public byte getByte(String key) {
         try {
             if (this.hasKey(key, 99)) {
-                return ((NBTPrimitive) this.tagMap.get(key)).getByte();
+                return ((NBTTagNumber) this.tagMap.get(key)).getByte();
             }
         } catch (ClassCastException ignored) {
         }
@@ -205,7 +229,7 @@ public class NBTTagCompound extends NBTTag {
     public short getShort(String key) {
         try {
             if (this.hasKey(key, 99)) {
-                return ((NBTPrimitive) this.tagMap.get(key)).getShort();
+                return ((NBTTagNumber) this.tagMap.get(key)).getShort();
             }
         } catch (ClassCastException ignored) {
         }
@@ -219,7 +243,7 @@ public class NBTTagCompound extends NBTTag {
     public int getInteger(String key) {
         try {
             if (this.hasKey(key, 99)) {
-                return ((NBTPrimitive) this.tagMap.get(key)).getInt();
+                return ((NBTTagNumber) this.tagMap.get(key)).getInt();
             }
         } catch (ClassCastException ignored) {
         }
@@ -233,7 +257,7 @@ public class NBTTagCompound extends NBTTag {
     public long getLong(String key) {
         try {
             if (this.hasKey(key, 99)) {
-                return ((NBTPrimitive) this.tagMap.get(key)).getLong();
+                return ((NBTTagNumber) this.tagMap.get(key)).getLong();
             }
         } catch (ClassCastException ignored) {
         }
@@ -247,7 +271,7 @@ public class NBTTagCompound extends NBTTag {
     public float getFloat(String key) {
         try {
             if (this.hasKey(key, 99)) {
-                return ((NBTPrimitive) this.tagMap.get(key)).getFloat();
+                return ((NBTTagNumber) this.tagMap.get(key)).getFloat();
             }
         } catch (ClassCastException ignored) {
         }
@@ -261,7 +285,7 @@ public class NBTTagCompound extends NBTTag {
     public double getDouble(String key) {
         try {
             if (this.hasKey(key, 99)) {
-                return ((NBTPrimitive) this.tagMap.get(key)).getDouble();
+                return ((NBTTagNumber) this.tagMap.get(key)).getDouble();
             }
         } catch (ClassCastException ignored) {
         }
@@ -394,30 +418,6 @@ public class NBTTagCompound extends NBTTag {
 
     public int hashCode() {
         return super.hashCode() ^ this.tagMap.hashCode();
-    }
-
-    private static void writeEntry(String name, NBTTag data, DataOutput output) throws IOException {
-        output.writeByte(data.getId());
-
-        if (data.getId() != 0) {
-            output.writeUTF(name);
-            data.write(output);
-        }
-    }
-
-    private static byte readType(DataInput input, NBTSizeTracker sizeTracker) throws IOException {
-        return input.readByte();
-    }
-
-    private static String readKey(DataInput input, NBTSizeTracker sizeTracker) throws IOException {
-        return input.readUTF();
-    }
-
-    static NBTTag readNBT(byte id, String key, DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException {
-        NBTTag tag = NBTTag.createNewByType(id);
-
-        tag.read(input, depth, sizeTracker);
-        return tag;
     }
 
     /**

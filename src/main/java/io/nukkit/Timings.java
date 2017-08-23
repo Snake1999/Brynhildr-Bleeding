@@ -3,11 +3,10 @@ package io.nukkit;
 import io.nukkit.blockentity.BlockEntity;
 import io.nukkit.entity.Entity;
 import io.nukkit.scheduler.NukkitTask;
-
 import io.nukkit.world.World;
 import org.bukkit.plugin.java.JavaPluginLoader;
-import org.spigotmc.CustomTimingsHandler;
 import org.bukkit.scheduler.BukkitTask;
+import org.spigotmc.CustomTimingsHandler;
 
 import java.util.HashMap;
 
@@ -49,6 +48,7 @@ public class Timings {
 
     /**
      * Gets a timer associated with a plugins tasks.
+     *
      * @param task
      * @param period
      * @return
@@ -71,7 +71,7 @@ public class Timings {
 
         String name = "Task: " + plugin + " Runnable: " + taskname;
         if (period > 0) {
-            name += "(interval:" + period +")";
+            name += "(interval:" + period + ")";
         } else {
             name += "(Single)";
         }
@@ -85,6 +85,7 @@ public class Timings {
 
     /**
      * Get a named timer for the specified entity type to track type specific timings.
+     *
      * @param entity
      * @return
      */
@@ -100,6 +101,7 @@ public class Timings {
 
     /**
      * Get a named timer for the specified block entity type to track type specific timings.
+     *
      * @param entity
      * @return
      */
@@ -142,7 +144,7 @@ public class Timings {
         public final CustomTimingsHandler syncChunkLoadPostTimer;
 
         public WorldTimingsHandler(World server) {
-            String name = server.worldData.getName() +" - ";
+            String name = server.worldData.getName() + " - ";
 
             mobSpawn = new CustomTimingsHandler("** " + name + "mobSpawn");
             doChunkUnload = new CustomTimingsHandler("** " + name + "doChunkUnload");

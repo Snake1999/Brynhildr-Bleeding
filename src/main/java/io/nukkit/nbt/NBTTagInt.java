@@ -4,7 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public class NBTTagInt extends NBTPrimitive {
+public class NBTTagInt extends NBTTagNumber {
     /**
      * The integer value for the tag.
      */

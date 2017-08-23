@@ -5,23 +5,20 @@ import io.nukkit.entity.Entity;
 import io.nukkit.util.EnumFacing;
 
 public class RayTraceResult {
-    private BlockPos blockPos;
-
     /**
      * What type of ray trace hit was this? 0 = block, 1 = entity
      */
     public Type typeOfHit;
     public EnumFacing sideHit;
-
     /**
      * The vector position of the hit
      */
     public Vec3d hitVec;
-
     /**
      * The hit entity
      */
     public Entity entityHit;
+    private BlockPos blockPos;
 
     public RayTraceResult(Vec3d hitVecIn, EnumFacing sideHitIn, BlockPos blockPosIn) {
         this(Type.BLOCK, hitVecIn, sideHitIn, blockPosIn);

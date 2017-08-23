@@ -4,12 +4,12 @@ import org.bukkit.plugin.Plugin;
 
 
 class NukkitAsyncDebugger {
-    private NukkitAsyncDebugger next = null;
     private final int expiry;
     private final Plugin plugin;
     private final Class<? extends Runnable> clazz;
+    private NukkitAsyncDebugger next = null;
 
-    NukkitAsyncDebugger(final int expiry, final  Plugin plugin, final Class<? extends Runnable> clazz) {
+    NukkitAsyncDebugger(final int expiry, final Plugin plugin, final Class<? extends Runnable> clazz) {
         this.expiry = expiry;
         this.plugin = plugin;
         this.clazz = clazz;

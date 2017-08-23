@@ -51,9 +51,9 @@ public class ConsoleWriter extends Thread {
     }
 
     private final ConsoleReader reader;
-    private CursorBuffer buffer;
     private final OutputStream output;
     private final ChatColor[] colors = ChatColor.values();
+    private CursorBuffer buffer;
 
     public ConsoleWriter(OutputStream output, ConsoleReader reader) {
         this.output = output;

@@ -7,6 +7,7 @@ import io.nukkit.util.logging.LoggerOutputStream;
 import jline.UnsupportedTerminal;
 import jline.console.ConsoleReader;
 import joptsimple.OptionSet;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
@@ -50,13 +51,10 @@ public class NukkitServer implements Server, Runnable {
     public OptionSet options;
 
     public ConsoleReader reader;
-
+    List<String> commandQueue = new ArrayList<>();
     private boolean isRunning = true;
     private boolean isStopped;
     private int serverPort = -1;
-
-    List<String> commandQueue = new ArrayList<>();
-
     private Thread serverThread;
 
     public NukkitServer(OptionSet options) {
@@ -608,13 +606,13 @@ public class NukkitServer implements Server, Runnable {
     }
 
     @Override
-    public void setIdleTimeout(int threshold) {
-
+    public int getIdleTimeout() {
+        return 0;
     }
 
     @Override
-    public int getIdleTimeout() {
-        return 0;
+    public void setIdleTimeout(int threshold) {
+
     }
 
     @Override
@@ -649,7 +647,7 @@ public class NukkitServer implements Server, Runnable {
 
     @Override
     public Spigot spigot() {
-        return null;
+        throw new NotImplementedException("Please call me nukkit!");
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public class NBTTagDouble extends NBTPrimitive {
+public class NBTTagDouble extends NBTTagNumber {
     /**
      * The double value for the tag.
      */

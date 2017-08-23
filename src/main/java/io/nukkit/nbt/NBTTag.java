@@ -21,20 +21,6 @@ public abstract class NBTTag {
     public static final byte TAG_INT_ARRAY = 11;
 
     /**
-     * Write the actual data contents of the tag, implemented in NBT extension classes
-     */
-    abstract void write(DataOutput output) throws IOException;
-
-    abstract void read(DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException;
-
-    public abstract String toString();
-
-    /**
-     * Gets the type byte for the tag.
-     */
-    public abstract byte getId();
-
-    /**
      * Creates a new NBTTag object that corresponds with the passed in id.
      */
     protected static NBTTag createNewByType(byte id) {
@@ -79,6 +65,20 @@ public abstract class NBTTag {
                 return null;
         }
     }
+
+    /**
+     * Write the actual data contents of the tag, implemented in NBT extension classes
+     */
+    abstract void write(DataOutput output) throws IOException;
+
+    abstract void read(DataInput input, int depth, NBTSizeTracker sizeTracker) throws IOException;
+
+    public abstract String toString();
+
+    /**
+     * Gets the type byte for the tag.
+     */
+    public abstract byte getId();
 
     /**
      * Creates a clone of the tag.

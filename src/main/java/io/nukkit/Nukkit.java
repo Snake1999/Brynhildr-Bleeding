@@ -22,18 +22,16 @@ import java.util.List;
  * Nukkit Project
  */
 public class Nukkit {
-    private static PrintStream SYSTEM_OUT;
-
-    public static boolean useJline = true;
-    public static boolean useConsole = true;
-    public static boolean ANSI = true;
-    public static boolean enableStatusBar = false;
-
     public final static String BUKKIT_VERSION = Versioning.getBukkitVersion();
     public final static String VERSION = NukkitServer.class.getPackage().getImplementationVersion();
     public final static String CODENAME = "Brynhildr";
     public final static String MINECRAFT_VERSION = "v1.2.0.22";
     public final static String MINECRAFT_VERSION_NETWORK = "1.2.0.22";
+    public static boolean useJline = true;
+    public static boolean useConsole = true;
+    public static boolean ANSI = true;
+    public static boolean enableStatusBar = false;
+    private static PrintStream SYSTEM_OUT;
 
     public static void main(String[] args) {
         System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");

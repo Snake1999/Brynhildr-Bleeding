@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-public class CompressedStreamTools {
+public class NBTStreams {
     /**
      * Load the gzipped compound from the inputstream.
      */

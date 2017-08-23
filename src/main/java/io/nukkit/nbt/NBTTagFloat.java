@@ -6,7 +6,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public class NBTTagFloat extends NBTPrimitive {
+public class NBTTagFloat extends NBTTagNumber {
     /**
      * The float value for the tag.
      */

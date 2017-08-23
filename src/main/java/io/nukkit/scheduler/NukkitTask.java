@@ -2,13 +2,18 @@ package io.nukkit.scheduler;
 
 import io.nukkit.Timings;
 import org.bukkit.Bukkit;
-import org.spigotmc.CustomTimingsHandler; // Spigot
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.spigotmc.CustomTimingsHandler;
 
 
-public class NukkitTask implements BukkitTask, Runnable { // Spigot
+public class NukkitTask implements BukkitTask, Runnable {
 
+    final CustomTimingsHandler timings;
+    private final Runnable task;
+    private final Plugin plugin;
+    private final int id;
+    public String timingName = null;
     private volatile NukkitTask next = null;
     /**
      * -1 means no repeating <br>
@@ -20,11 +25,7 @@ public class NukkitTask implements BukkitTask, Runnable { // Spigot
      */
     private volatile long period;
     private long nextRun;
-    private final Runnable task;
-    private final Plugin plugin;
-    private final int id;
 
-    final CustomTimingsHandler timings; // Spigot
     NukkitTask() {
         this(null, null, -1, -1);
     }
@@ -33,14 +34,14 @@ public class NukkitTask implements BukkitTask, Runnable { // Spigot
         this(null, task, -1, -1);
     }
 
-    // Spigot start
-    public String timingName = null;
     NukkitTask(String timingName) {
         this(timingName, null, null, -1, -1);
     }
+
     NukkitTask(String timingName, final Runnable task) {
         this(timingName, null, task, -1, -1);
     }
+
     NukkitTask(String timingName, final Plugin plugin, final Runnable task, final int id, final long period) {
         this.plugin = plugin;
         this.task = task;
@@ -52,7 +53,6 @@ public class NukkitTask implements BukkitTask, Runnable { // Spigot
 
     NukkitTask(final Plugin plugin, final Runnable task, final int id, final long period) {
         this(null, plugin, task, id, period);
-    // Spigot end
     }
 
     public final int getTaskId() {
@@ -113,12 +113,10 @@ public class NukkitTask implements BukkitTask, Runnable { // Spigot
         return true;
     }
 
-    // Spigot start
     public String getTaskName() {
         if (timingName != null) {
             return timingName;
         }
         return task.getClass().getName();
     }
-    // Spigot end
 }

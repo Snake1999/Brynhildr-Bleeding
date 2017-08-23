@@ -1,13 +1,8 @@
 package io.nukkit.scheduler;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import org.bukkit.plugin.Plugin;
+
+import java.util.concurrent.*;
 
 class NukkitFuture<T> extends NukkitTask implements Future<T> {
 

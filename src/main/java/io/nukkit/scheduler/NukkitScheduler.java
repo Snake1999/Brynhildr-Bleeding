@@ -1,19 +1,5 @@
 package io.nukkit.scheduler;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.plugin.Plugin;
@@ -22,38 +8,42 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitWorker;
 
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
+
 /**
  * The fundamental concepts for this implementation:
  * <li>Main thread owns {@link #head} and {@link #currentTick}, but it may be read from any thread</li>
  * <li>Main thread exclusively controls {@link #temp} and {@link #pending}.
- *     They are never to be accessed outside of the main thread; alternatives exist to prevent locking.</li>
+ * They are never to be accessed outside of the main thread; alternatives exist to prevent locking.</li>
  * <li>{@link #head} to {@link #tail} act as a linked list/queue, with 1 consumer and infinite producers.
- *     Adding to the tail is atomic and very efficient; utility method is {@link #handle(NukkitTask, long)} or {@link #addTask(NukkitTask)}. </li>
+ * Adding to the tail is atomic and very efficient; utility method is {@link #handle(NukkitTask, long)} or {@link #addTask(NukkitTask)}. </li>
  * <li>Changing the period on a task is delicate.
- *     Any future task needs to notify waiting threads.
- *     Async tasks must be synchronized to make sure that any thread that's finishing will remove itself from {@link #runners}.
- *     Another utility method is provided for this, {@link #cancelTask(int)}</li>
+ * Any future task needs to notify waiting threads.
+ * Async tasks must be synchronized to make sure that any thread that's finishing will remove itself from {@link #runners}.
+ * Another utility method is provided for this, {@link #cancelTask(int)}</li>
  * <li>{@link #runners} provides a moderately up-to-date view of active tasks.
- *     If the linked head to tail set is read, all remaining tasks that were active at the time execution started will be located in runners.</li>
+ * If the linked head to tail set is read, all remaining tasks that were active at the time execution started will be located in runners.</li>
  * <li>Async tasks are responsible for removing themselves from runners</li>
  * <li>Sync tasks are only to be removed from runners on the main thread when coupled with a removal from pending and temp.</li>
  * <li>Most of the design in this scheduler relies on queuing special tasks to perform any data changes on the main thread.
- *     When executed from inside a synchronous method, the scheduler will be updated before next execution by virtue of the frequent {@link #parsePending()} calls.</li>
+ * When executed from inside a synchronous method, the scheduler will be updated before next execution by virtue of the frequent {@link #parsePending()} calls.</li>
  */
 public class NukkitScheduler implements BukkitScheduler {
+
+    private static final int RECENT_TICKS;
+
+    static {
+        RECENT_TICKS = 30;
+    }
 
     /**
      * Counter for IDs. Order doesn't matter, only uniqueness.
      */
     private final AtomicInteger ids = new AtomicInteger(1);
-    /**
-     * Current head of linked-list. This reference is always stale, {@link NukkitTask#next} is the live reference.
-     */
-    private volatile NukkitTask head = new NukkitTask();
-    /**
-     * Tail of a linked-list. AtomicReference only matters when adding to queue
-     */
-    private final AtomicReference<NukkitTask> tail = new AtomicReference<NukkitTask>(head);
     /**
      * Main thread logic only
      */
@@ -73,15 +63,31 @@ public class NukkitScheduler implements BukkitScheduler {
     /**
      * These are tasks that are currently active. It's provided for 'viewing' the current state.
      */
-    private final ConcurrentHashMap<Integer, NukkitTask> runners = new ConcurrentHashMap<Integer, NukkitTask>();
+    private final ConcurrentHashMap<Integer, NukkitTask> runners = new ConcurrentHashMap<>();
+    private final Executor executor = Executors.newCachedThreadPool(new com.google.common.util.concurrent.ThreadFactoryBuilder().setNameFormat("NukkitScheduler Thread - %1$d").build());
+    /**
+     * Current head of linked-list. This reference is always stale, {@link NukkitTask#next} is the live reference.
+     */
+    private volatile NukkitTask head = new NukkitTask();
+    /**
+     * Tail of a linked-list. AtomicReference only matters when adding to queue
+     */
+    private final AtomicReference<NukkitTask> tail = new AtomicReference<NukkitTask>(head);
     private volatile int currentTick = -1;
-    private final Executor executor = Executors.newCachedThreadPool(new com.google.common.util.concurrent.ThreadFactoryBuilder().setNameFormat("Craft NukkitScheduler Thread - %1$d").build()); // Spigot
-    private NukkitAsyncDebugger debugHead = new NukkitAsyncDebugger(-1, null, null) {@Override StringBuilder debugTo(StringBuilder string) {return string;}};
+    private NukkitAsyncDebugger debugHead = new NukkitAsyncDebugger(-1, null, null) {
+        @Override
+        StringBuilder debugTo(StringBuilder string) {
+            return string;
+        }
+    };
     private NukkitAsyncDebugger debugTail = debugHead;
-    private static final int RECENT_TICKS;
 
-    static {
-        RECENT_TICKS = 30;
+    private static void validate(final Plugin plugin, final Object task) {
+        Validate.notNull(plugin, "Plugin cannot be null");
+        Validate.notNull(task, "Task cannot be null");
+        if (!plugin.isEnabled()) {
+            throw new IllegalPluginAccessException("Plugin attempted to register task while disabled");
+        }
     }
 
     public int scheduleSyncDelayedTask(final Plugin plugin, final Runnable task) {
@@ -175,6 +181,7 @@ public class NukkitScheduler implements BukkitScheduler {
                             check(NukkitScheduler.this.pending);
                         }
                     }
+
                     private boolean check(final Iterable<NukkitTask> collection) {
                         final Iterator<NukkitTask> tasks = collection.iterator();
                         while (tasks.hasNext()) {
@@ -189,7 +196,8 @@ public class NukkitScheduler implements BukkitScheduler {
                             }
                         }
                         return false;
-                    }});
+                    }
+                });
         handle(task, 0l);
         for (NukkitTask taskPending = head.getNext(); taskPending != null; taskPending = taskPending.getNext()) {
             if (taskPending == task) {
@@ -209,6 +217,7 @@ public class NukkitScheduler implements BukkitScheduler {
                         check(NukkitScheduler.this.pending);
                         check(NukkitScheduler.this.temp);
                     }
+
                     void check(final Iterable<NukkitTask> collection) {
                         final Iterator<NukkitTask> tasks = collection.iterator();
                         while (tasks.hasNext()) {
@@ -356,9 +365,9 @@ public class NukkitScheduler implements BukkitScheduler {
                     task.getOwner().getLogger().log(
                             Level.WARNING,
                             String.format(
-                                "Task #%s for %s generated an exception",
-                                task.getTaskId(),
-                                task.getOwner().getDescription().getFullName()),
+                                    "Task #%s for %s generated an exception",
+                                    task.getTaskId(),
+                                    task.getOwner().getDescription().getFullName()),
                             throwable);
                 }
                 parsePending();
@@ -396,14 +405,6 @@ public class NukkitScheduler implements BukkitScheduler {
         return task;
     }
 
-    private static void validate(final Plugin plugin, final Object task) {
-        Validate.notNull(plugin, "Plugin cannot be null");
-        Validate.notNull(task, "Task cannot be null");
-        if (!plugin.isEnabled()) {
-            throw new IllegalPluginAccessException("Plugin attempted to register task while disabled");
-        }
-    }
-
     private int nextId() {
         return ids.incrementAndGet();
     }
@@ -423,8 +424,8 @@ public class NukkitScheduler implements BukkitScheduler {
         // We split this because of the way things are ordered for all of the async calls in NukkitScheduler
         // (it prevents race-conditions)
         for (task = head; task != lastTask; task = head) {
-           head = task.getNext();
-           task.setNext(null);
+            head = task.getNext();
+            task.setNext(null);
         }
         this.head = lastTask;
     }

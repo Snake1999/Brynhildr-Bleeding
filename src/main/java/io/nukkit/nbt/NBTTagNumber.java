@@ -1,6 +1,6 @@
 package io.nukkit.nbt;
 
-abstract class NBTPrimitive extends NBTTag {
+abstract class NBTTagNumber extends NBTTag {
     public abstract long getLong();
 
     public abstract int getInt();
