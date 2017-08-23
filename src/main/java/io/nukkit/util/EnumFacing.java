@@ -3,7 +3,6 @@ package io.nukkit.util;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
-import io.nukkit.util.math.MathHelper;
 import io.nukkit.util.math.Vec3i;
 
 import javax.annotation.Nullable;

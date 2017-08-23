@@ -596,12 +596,12 @@ public class NukkitServer implements Server, Runnable {
     }
 
     @Override
-    public CachedServerIcon loadServerIcon(File file) throws IllegalArgumentException, Exception {
+    public CachedServerIcon loadServerIcon(File file) throws Exception {
         return null;
     }
 
     @Override
-    public CachedServerIcon loadServerIcon(BufferedImage image) throws IllegalArgumentException, Exception {
+    public CachedServerIcon loadServerIcon(BufferedImage image) throws Exception {
         return null;
     }
 

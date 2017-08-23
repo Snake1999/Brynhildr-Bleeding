@@ -1,7 +1,5 @@
 package io.nukkit.nbt;
 
-import io.nukkit.util.math.MathHelper;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
