@@ -1,3 +1,9 @@
 Manifest-Version: 1.0
 Main-Class: io.nukkit.Nukkit
+Specification-Title: Nukkit
+Specification-Version: 2.0dev
+Specification-Vendor: Nukkit Team
+Implementation-Title: Nukkit
+Implementation-Version: 2.0dev
+Implementation-Vendor: Nukkit Team
 

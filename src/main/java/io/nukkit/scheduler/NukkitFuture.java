@@ -1,105 +1,108 @@
 package io.nukkit.scheduler;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-class NukkitFuture extends Task implements Future {
-    private final Callable callable;
-    private Object value;
+import org.bukkit.plugin.Plugin;
+
+class NukkitFuture<T> extends NukkitTask implements Future<T> {
+
+    private final Callable<T> callable;
+    private T value;
     private Exception exception = null;
 
-    NukkitFuture(Callable callable, TaskOwner owner, int id) {
-        super(owner, null, id, -1L);
+    NukkitFuture(final Callable<T> callable, final Plugin plugin, final int id) {
+        super(plugin, null, id, -1l);
         this.callable = callable;
     }
 
-    public synchronized boolean cancel(boolean mayInterruptIfRunning) {
-        if (this.getPeriod() != -1L) {
+    public synchronized boolean cancel(final boolean mayInterruptIfRunning) {
+        if (getPeriod() != -1l) {
             return false;
-        } else {
-            this.setPeriod(-2L);
-            return true;
         }
+        setPeriod(-2l);
+        return true;
     }
 
     public boolean isCancelled() {
-        return this.getPeriod() == -2L;
+        return getPeriod() == -2l;
     }
 
     public boolean isDone() {
-        long period = this.getPeriod();
-        return period != -1L && period != -3L;
+        final long period = this.getPeriod();
+        return period != -1l && period != -3l;
     }
 
-    public Object get() throws CancellationException, InterruptedException, ExecutionException {
+    public T get() throws CancellationException, InterruptedException, ExecutionException {
         try {
-            return this.get(0L, TimeUnit.MILLISECONDS);
-        } catch (TimeoutException e) {
+            return get(0, TimeUnit.MILLISECONDS);
+        } catch (final TimeoutException e) {
             throw new Error(e);
         }
     }
 
-    public synchronized Object get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    public synchronized T get(long timeout, final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         timeout = unit.toMillis(timeout);
         long period = this.getPeriod();
-        long timestamp = timeout > 0L ? System.currentTimeMillis() : 0L;
-
-        while (period == -1L || period == -3L) {
-            this.wait(timeout);
-            period = this.getPeriod();
-            if (period != -1L && period != -3L) {
-                break;
-            }
-
-            if (timeout != 0L) {
-                timeout += timestamp - (timestamp = System.currentTimeMillis());
-                if (timeout <= 0L) {
+        long timestamp = timeout > 0 ? System.currentTimeMillis() : 0l;
+        while (true) {
+            if (period == -1l || period == -3l) {
+                this.wait(timeout);
+                period = this.getPeriod();
+                if (period == -1l || period == -3l) {
+                    if (timeout == 0l) {
+                        continue;
+                    }
+                    timeout += timestamp - (timestamp = System.currentTimeMillis());
+                    if (timeout > 0) {
+                        continue;
+                    }
                     throw new TimeoutException();
                 }
             }
-        }
-
-        if (period == -2L) {
-            throw new CancellationException();
-        } else if (period == -4L) {
-            if (this.exception == null) {
-                return this.value;
-            } else {
-                throw new ExecutionException(this.exception);
+            if (period == -2l) {
+                throw new CancellationException();
             }
-        } else {
-            throw new IllegalStateException("Expected -1 to -4, got " + period);
+            if (period == -4l) {
+                if (exception == null) {
+                    return value;
+                }
+                throw new ExecutionException(exception);
+            }
+            throw new IllegalStateException("Expected " + -1l + " to " + -4l + ", got " + period);
         }
     }
 
+    @Override
     public void run() {
         synchronized (this) {
-            if (this.getPeriod() == -2L) {
+            if (getPeriod() == -2l) {
                 return;
             }
-
-            this.setPeriod(-3L);
+            setPeriod(-3l);
         }
-
         try {
-            this.value = this.callable.call();
-        } catch (Exception e) {
-            this.exception = e;
+            value = callable.call();
+        } catch (final Exception e) {
+            exception = e;
         } finally {
             synchronized (this) {
-                this.setPeriod(-4L);
+                setPeriod(-4l);
                 this.notifyAll();
             }
         }
-
     }
 
     synchronized boolean cancel0() {
-        if (this.getPeriod() != -1L) {
+        if (getPeriod() != -1l) {
             return false;
-        } else {
-            this.setPeriod(-2L);
-            this.notifyAll();
-            return true;
         }
+        setPeriod(-2l);
+        notifyAll();
+        return true;
     }
 }

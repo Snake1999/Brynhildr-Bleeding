@@ -2,11 +2,12 @@ package io.nukkit.util.logging;
 
 
 import io.nukkit.Nukkit;
-import io.nukkit.enumerations.ChatColor;
+import io.nukkit.util.ChatColors;
 import jline.console.ConsoleReader;
 import jline.console.CursorBuffer;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.bukkit.ChatColor;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
 
@@ -73,7 +74,7 @@ public class ConsoleWriter extends Thread {
                         }
                     }
                 } else {
-                    message = ChatColor.clean(message);
+                    message = ChatColors.clean(message);
                 }
 
                 try {
@@ -100,4 +101,5 @@ public class ConsoleWriter extends Thread {
             }
         }
     }
+
 }

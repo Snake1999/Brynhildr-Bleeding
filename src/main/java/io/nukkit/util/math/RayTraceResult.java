@@ -2,7 +2,7 @@ package io.nukkit.util.math;
 
 
 import io.nukkit.entity.Entity;
-import io.nukkit.enumerations.EnumFacing;
+import io.nukkit.util.EnumFacing;
 
 public class RayTraceResult {
     private BlockPos blockPos;

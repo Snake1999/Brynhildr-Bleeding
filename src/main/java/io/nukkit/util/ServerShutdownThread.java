@@ -1,6 +1,6 @@
 package io.nukkit.util;
 
-import io.nukkit.Server;
+import io.nukkit.NukkitServer;
 
 /**
  * author: MagicDroidX
@@ -8,9 +8,9 @@ import io.nukkit.Server;
  */
 public class ServerShutdownThread extends Thread {
 
-    private final Server server;
+    private final NukkitServer server;
 
-    public ServerShutdownThread(Server server) {
+    public ServerShutdownThread(NukkitServer server) {
         this.server = server;
     }
 

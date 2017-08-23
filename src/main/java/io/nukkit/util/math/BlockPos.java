@@ -3,7 +3,7 @@ package io.nukkit.util.math;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Lists;
 import io.nukkit.entity.Entity;
-import io.nukkit.enumerations.EnumFacing;
+import io.nukkit.util.EnumFacing;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

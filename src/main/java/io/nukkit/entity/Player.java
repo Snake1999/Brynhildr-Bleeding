@@ -1,6 +1,7 @@
 package io.nukkit.entity;
 
-import io.nukkit.item.ItemStack;
+
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Nukkit Project

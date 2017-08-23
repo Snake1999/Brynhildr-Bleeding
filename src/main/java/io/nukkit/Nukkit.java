@@ -1,20 +1,11 @@
 package io.nukkit;
 
-import io.nukkit.command.CommandException;
-import io.nukkit.command.CommandSender;
-import io.nukkit.entity.Player;
-import io.nukkit.enumerations.ChatColor;
-import io.nukkit.item.ItemFactory;
-import io.nukkit.item.meta.MetaItem;
-import io.nukkit.plugin.PluginManager;
-import io.nukkit.scheduler.Scheduler;
 import io.nukkit.util.Versioning;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
@@ -22,8 +13,8 @@ import org.fusesource.jansi.AnsiConsole;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -31,104 +22,18 @@ import java.util.List;
  * Nukkit Project
  */
 public class Nukkit {
+    private static PrintStream SYSTEM_OUT;
 
     public static boolean useJline = true;
     public static boolean useConsole = true;
     public static boolean ANSI = true;
+    public static boolean enableStatusBar = false;
 
-    public final static String VERSION = Versioning.getNukkitVersion();
-    public final static String VERSION_UNKNOWN = "2.0dev";
+    public final static String BUKKIT_VERSION = Versioning.getBukkitVersion();
+    public final static String VERSION = NukkitServer.class.getPackage().getImplementationVersion();
     public final static String CODENAME = "Brynhildr";
-    public final static String MINECRAFT_VERSION = "v0.15.0 alpha";
-    public final static String MINECRAFT_VERSION_NETWORK = "0.15.0";
-    public final static String API_VERSION = "2.0.0";
-
-    private static Server server;
-
-    public static Server getServer() {
-        return server;
-    }
-
-    public static void setServer(Server server) {
-        if (Nukkit.server != null) {
-            throw new UnsupportedOperationException("Cannot redefine singleton Server");
-        }
-
-        Nukkit.server = server;
-        server.getLogger().info("This server is running " + getName() + " version " + getNukkitVersion() + " (Implementing API \"" + ChatColor.AQUA + CODENAME + ChatColor.WHITE + "\" version " + API_VERSION + ")");
-    }
-
-    /**
-     * @see Server#getName()
-     */
-    public static String getName() {
-        return server.getName();
-    }
-
-    /**
-     * @see Server#getVersion()
-     */
-    public static String getVersion() {
-        return server.getVersion();
-    }
-
-    /**
-     * @see Server#getNukkitVersion()
-     */
-    public static String getNukkitVersion() {
-        return server.getNukkitVersion();
-    }
-
-    /**
-     * @see Server#getOnlinePlayers()
-     */
-    public static Collection<? extends Player> getOnlinePlayers() {
-        return server.getOnlinePlayers();
-    }
-
-    /**
-     * @see Server#getPluginManager()
-     */
-    public static PluginManager getPluginManager() {
-        return server.getPluginManager();
-    }
-
-    /**
-     * @see Server#getScheduler()
-     */
-    public static Scheduler getScheduler() {
-        return server.getScheduler();
-    }
-
-    /**
-     * Gets the instance of the item factory (for {@link MetaItem}).
-     *
-     * @return the item factory
-     * @see ItemFactory
-     */
-    public static ItemFactory getItemFactory() {
-        return server.getItemFactory();
-    }
-
-    public static Logger getLogger() {
-        return server.getLogger();
-    }
-
-    /**
-     * @see Server#dispatchCommand(CommandSender sender, String commandLine)
-     */
-    public static boolean dispatchCommand(CommandSender sender, String commandLine) throws CommandException {
-        return server.dispatchCommand(sender, commandLine);
-    }
-
-    /**
-     * @see Server#getPlayerExact(String name)
-     */
-    @Deprecated
-    public static Player getPlayerExact(String name) {
-        return server.getPlayerExact(name);
-    }
-
+    public final static String MINECRAFT_VERSION = "v1.2.0.22";
+    public final static String MINECRAFT_VERSION_NETWORK = "1.2.0.22";
 
     public static void main(String[] args) {
         System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
@@ -146,6 +51,8 @@ public class Nukkit {
                 acceptsAll(asList("noansi", "disable-ansi"), "Disables jline and emulates the vanilla console");
 
                 acceptsAll(asList("noconsole"), "Disables the console");
+
+                acceptsAll(asList("s", "statusbar"), "Enables the status bar");
 
                 acceptsAll(asList("v", "version"), "Show the version of Nukkit");
 
@@ -168,7 +75,7 @@ public class Nukkit {
                 LogManager.getLogger(Nukkit.class.getName()).fatal((String) null, e);
             }
         } else if (optionSet.has("v")) {
-            System.out.println(Server.class.getPackage().getImplementationVersion());
+            System.out.println(NukkitServer.class.getPackage().getImplementationVersion());
         } else {
             String path = new File(".").getAbsolutePath();
             if (path.contains("!") || path.contains("+")) {
@@ -192,6 +99,10 @@ public class Nukkit {
                     ANSI = false;
                 }
 
+                if (optionSet.has("statusbar")) {
+                    enableStatusBar = true;
+                }
+
                 if (!useJline) {
                     // This ensures the terminal literal will always match the jline implementation
                     System.setProperty(jline.TerminalFactory.JLINE_TERMINAL, jline.UnsupportedTerminal.class.getName());
@@ -200,6 +111,8 @@ public class Nukkit {
                 if (ANSI) {
                     AnsiConsole.systemInstall();
                 }
+
+                SYSTEM_OUT = System.out;
 
                 if (optionSet.has("noconsole")) {
                     useConsole = false;
@@ -213,11 +126,15 @@ public class Nukkit {
                     context.updateLoggers();
                 }
 
-                Nukkit.server = new Server(optionSet);
+                new NukkitServer(optionSet);
             } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static PrintStream getSystemOut() {
+        return SYSTEM_OUT == null ? System.out : SYSTEM_OUT;
     }
 
     private static List<String> asList(String... params) {

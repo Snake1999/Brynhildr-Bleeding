@@ -1,11 +1,12 @@
 package io.nukkit.util.logging;
 
 import io.nukkit.Nukkit;
-import io.nukkit.Server;
+import io.nukkit.NukkitServer;
 import jline.console.ConsoleReader;
-import org.apache.logging.log4j.Level;
+import org.bukkit.Bukkit;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 
 /**
@@ -14,9 +15,9 @@ import java.io.IOException;
  */
 public class ConsoleHandler extends Thread {
 
-    private final Server server;
+    private final NukkitServer server;
 
-    public ConsoleHandler(Server server) {
+    public ConsoleHandler(NukkitServer server) {
         super("Server console handler");
 
         this.server = server;
@@ -42,7 +43,7 @@ public class ConsoleHandler extends Thread {
                     }
                 }
             } catch (IOException e) {
-                Nukkit.getLogger().log(Level.ERROR, "Exception handling console input", e);
+                Bukkit.getLogger().log(Level.SEVERE, "Exception handling console input", e);
             }
         }
     }

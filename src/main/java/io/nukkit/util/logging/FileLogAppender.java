@@ -1,7 +1,7 @@
 package io.nukkit.util.logging;
 
 
-import io.nukkit.enumerations.ChatColor;
+import io.nukkit.util.ChatColors;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -97,7 +97,7 @@ public final class FileLogAppender extends AbstractOutputStreamAppender<RollingF
                 event.getMarker(),
                 event.getLoggerFqcn(),
                 event.getLevel(),
-                new MessageFormatMessage(ChatColor.clean(event.getMessage().getFormattedMessage())),
+                new MessageFormatMessage(ChatColors.clean(event.getMessage().getFormattedMessage())),
                 event.getThrown(),
                 event.getContextMap(),
                 event.getContextStack(),

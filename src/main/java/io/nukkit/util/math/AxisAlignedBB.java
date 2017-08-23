@@ -1,7 +1,7 @@
 package io.nukkit.util.math;
 
 import com.google.common.annotations.VisibleForTesting;
-import io.nukkit.enumerations.EnumFacing;
+import io.nukkit.util.EnumFacing;
 
 import javax.annotation.Nullable;
 
